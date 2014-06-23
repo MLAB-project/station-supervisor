@@ -3,7 +3,7 @@ Jack Deamon Monitor
 
 This program validates that it is possible to connect to the Jack-deamon. If connection fails it executes an arbitrary script which supposedly will attempt to restart jackd and associated processes.
 
-it depends on py-jack which is availible via `pip install py-jack`.
+it depends on [py-jack](https://pypi.python.org/pypi/py-jack/0.5.2 "py-jack on Python Package Index") which is availible via `pip install py-jack`.
 
 Usage example:
 --------------
