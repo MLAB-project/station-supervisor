@@ -16,3 +16,4 @@ It can be made more verbose by using the -v flag or logging to a file with the -
 Further notes:
 --------------
 It can be disowned or nohuped but currently does not do so on its own accord.
+![.](http://zxz.se/~zinob/pixel.png)
