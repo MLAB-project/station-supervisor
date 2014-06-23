@@ -42,13 +42,14 @@ def main():
 	while True:
 		status=checkJackHang.testJack()
 		if  status != None:
-			logWrite(logfile,str(status),verbose)
+			logWrite(logfile,str(status)+"attempting to recover",verbose)
 			try:
 				result=sub.check_output(args,stderr=sub.STDOUT)
 			except sub.CalledProcessError:
+				postfix="Execution of recoveryscript failed: "
 				crashlog=str(sys.exc_info()[1])+" >> "+sys.exc_info()[1].output
-				crashlog=crashlog.replace("\n","  ")
-				logWrite(logfile,crashlog,True)
+				crashlog=crashlog.replace("\n","\\n")
+				logWrite(logfile,postfix+crashlog,True)
 
 
 		time.sleep(interval)
