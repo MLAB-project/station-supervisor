@@ -2,20 +2,23 @@
 import subprocess as sub
 import os 
 import sys
+
+path=os.getenv("PATH").split(":")
+path+=[p.replace("bin","sbin") for p in path if "bin" in p ]
+ntppath=None
+for p in path:
+	execpath= os.path.join(p,"ntpdate")
+	try:
+		os.stat(execpath)
+		ntppath=execpath
+		break
+	except:
+		pass
+assert ntppath!=None, "Could not locate the ntpdate program"
+	
+
 def run(ntpHost):
 	"""Querys a given ntp host or ntp pool and returns the time difference """
-#/usr/sbin/ntpdate -q europe.pool.ntp.org
-	path=os.getenv("PATH").split(":")
-	path+=[p.replace("bin","sbin") for p in path if "bin" in p ]
-	ntppath=None
-	for p in path:
-		execpath= os.path.join(p,"ntpdate")
-		try:
-			os.stat(execpath)
-			ntppath=execpath
-		except:
-			pass
-	assert ntppath!=None, "Could not locate the ntpdate program"
 	result=sub.check_output([ntppath, "-q",ntpHost]).strip().splitlines()
 	return float(result[-1].split()[-2])
 
