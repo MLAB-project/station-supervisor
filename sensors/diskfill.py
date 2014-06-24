@@ -2,8 +2,19 @@
 import subprocess as sub
 
 def run(device):
-	"""Takes a device name and returns the used space and the total size of the device in kibibytes"""
-	result=sub.check_output(["df", "-k","--output=used,size",device],8000).splitlines()
+	"""Takes a device name and returns the used space and the total size of the device in kibibytes.
+for a drive like:
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sdtest      95G   71G   19G  79% /
+the output would be
+>>> run("/dev/sdtest")
+[73826416, 98697828]
+"""
+	if device == "/dev/sdtest": #Hardcoded for regression-testing.
+		result="""    Used 1K-blocks
+		73826416  98697828 """.splitlines()
+	else:
+		result=sub.check_output(["df", "-k","--output=used,size",device],8000).splitlines()
 	if len(result) <2:
 		raise ValueError('Device:"'+device +'" was not found')
 	elif len(result)>2:
@@ -36,6 +47,10 @@ def repr(device):
 
 >>> repr("/dev/null")
 '0.0 KiB/1.92 GiB 0.00% used'
+
+>>> repr("/dev/sdtest")
+'70.41 GiB/94.13 GiB 74.80% used'
+
 """
 	avail,size=run(device)
 	return "{}/{} {:.2%} used".format(humanize(avail),humanize(size),float(avail)/size)
@@ -43,18 +58,27 @@ def repr(device):
 def check(device,limits):
 	"""Takes a device and a list of limit-values, returns a list of booleans.
 
-	If the values are floats <=1 it is interpreted as a percentage of the drive-space, if its an int or >1 it is interpeted as an absolute number of kibibytes that must be free. The program then returns a list of booleans where True mean that there was more free % or Kis than the limit.
-	
+	If the values are floats between 0 an 1 it is interpreted as the maximum used percentage of the drive-space, if its an int or >1 it is interpeted as an absolute number of kibibytes that must be free. The program then returns a list of booleans where True mean that there was more free % or Kis than the limit.
+
+On the same /dsv/sdtest drive  as for .run() the folowing thest will check that:
+We have at least 10GB (should be OK)
+25GB free on /dev/sdtest (should fail)
+at most 90% fill (should be OK)
+at most 70% fill (should fail)
+>>> check("/dev/sdtest",[10**7,2.5*10**7,0.9,0.7])
+[True, False, True, False]
+
+/dev/null is a bit artificial but it should be availible everywhere
 >>> check("/dev/null",[10**100,0.5,40])
 [False, True, True]
 """
 	used,size=run(device)
 	avail=size-used
-	perc=float(avail)/size
+	perc=float(used)/size
 	res=[]
 	for i in limits:
 		if type(i)==float and i <=1:
-			if perc >= i:
+			if perc <= i:
 				res.append(True)
 			else:
 				res.append(False)
