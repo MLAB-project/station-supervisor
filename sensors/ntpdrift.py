@@ -20,10 +20,12 @@ assert ntppath!=None, "Could not locate the ntpdate program"
 def run(ntpHost):
 	"""Querys a given ntp host or ntp pool and returns the time difference """
 	result=sub.check_output([ntppath, "-q",ntpHost]).strip().splitlines()
-	return float(result[-1].split()[-2])
+	summaryline=result[-1].split()
+	diff=summaryline[summaryline.index("sec")-1]
+	return float(diff)
 
-def repr(device):
-	return "time drift:"
+def repr(host):
+	return "time drift relative to {}: {:.2f}".format(host,run(host))
 
 def check(ntpHosts):
 	"""Takes a list of host-limit tuples and returns wether the system-time differs less than the limit value from the given ntp-host
