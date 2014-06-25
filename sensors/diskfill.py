@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 import subprocess as sub
+if __name__ == "__main__":
+	import sys
+	import os
+	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from utils.statuses import Pass,Fail
 
 def run(device):
 	"""Takes a device name and returns the used space and the total size of the device in kibibytes.
@@ -58,7 +63,7 @@ def repr(device):
 def check(device,limits):
 	"""Takes a device and a list of limit-values, returns a list of booleans.
 
-	If the values are floats between 0 an 1 it is interpreted as the maximum used percentage of the drive-space, if its an int or >1 it is interpeted as an absolute number of kibibytes that must be free. The program then returns a list of booleans where True mean that there was more free % or Kis than the limit.
+	If the values are floats between 0 an 1 it is interpreted as the maximum used percentage of the drive-space, if its an int or >1 it is interpeted as an absolute number of kibibytes that must be free. The program then returns a list of booleans where Pass mean that there was more free % or Kis than the limit.
 
 On the same /dsv/sdtest drive  as for .run() the folowing thest will check that:
 We have at least 10GB (should be OK)
@@ -66,11 +71,11 @@ We have at least 10GB (should be OK)
 at most 90% fill (should be OK)
 at most 70% fill (should fail)
 >>> check("/dev/sdtest",[10**7,2.5*10**7,0.9,0.7])
-[True, False, True, False]
+[Pass, Fail, Pass, Fail]
 
 /dev/null is a bit artificial but it should be availible everywhere
 >>> check("/dev/null",[10**100,0.5,40])
-[False, True, True]
+[Fail, Pass, Pass]
 """
 	used,size=run(device)
 	avail=size-used
@@ -79,14 +84,14 @@ at most 70% fill (should fail)
 	for i in limits:
 		if type(i)==float and i <=1:
 			if perc <= i:
-				res.append(True)
+				res.append(Pass())
 			else:
-				res.append(False)
+				res.append(Fail("{:.2%} is more than the allowed {:.2%} used space".format(perc,i)))
 		else:
 			if avail >= i:
-				res.append(True)
+				res.append(Pass())
 			else:
-				res.append(False)
+				res.append(Fail("{} is less than the allowed{} free space".format(humanize(avail),humanize(i))))
 	return res
 
 

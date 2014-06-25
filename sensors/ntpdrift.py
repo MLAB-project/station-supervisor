@@ -2,6 +2,9 @@
 import subprocess as sub
 import os 
 import sys
+if __name__ == "__main__":
+	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from utils.statuses import Pass,Fail
 
 path=os.getenv("PATH").split(":")
 path+=[p.replace("bin","sbin") for p in path if "bin" in p ]
@@ -32,14 +35,15 @@ def check(ntpHosts):
 	To check that the time is off with less than one second from the europe ntp-pool (should,probably be OK)
 	and with less than 0.1 ms from ntp1.sp.se (should, probably fail)
 >>> check([("europe.pool.ntp.org",1.0),("ntp1.sp.se",0.0001)])
-[True, False]
+[Pass, Fail]
 	"""
 	res=[]
 	for host,limit in ntpHosts:
-		if abs(run(host))<=limit:
-			res.append(True)
+		diff=run(host)
+		if abs(diff)<=limit:
+			res.append(Pass())
 		else:
-			res.append(False)
+			res.append(Fail("{} was {:.2f} seconds off".format(host,diff)))
 	return res
 
 if __name__ == "__main__":

@@ -1,3 +1,3 @@
 #!/usr/bin/env python
 
-__all__=["diskfill"]
+__all__=["diskfill","ntpdrift"]
