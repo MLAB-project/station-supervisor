@@ -8,7 +8,7 @@ class Status(object):
 		self.__name__=name
 
 	def __nonzero__(self):
-		assert False, "must be superclassed"
+		raise NotImplementedError( "must be superclassed")
 
 	def __repr__(self):
 		return self.__name__
@@ -31,7 +31,7 @@ Pass
 True
 """
 	message=""
-	def __init__(self,message):
+	def __init__(self,message=""):
 		super(Pass,self).__init__("Pass")
 		self.message=message
 
@@ -50,8 +50,8 @@ Fail
 True
 """
 	message=""
-	def __init__(self,message):
-		super(Pass,self).__init__("Fail")
+	def __init__(self,message=""):
+		super(Fail,self).__init__("Fail")
 		self.message=message
 
 	def __nonzero__(self):
