@@ -108,6 +108,7 @@ class scheduler:
 			>>> w2[0]%newival,list(w2[1])[0].get_interval()
 			(0, ...)
 		"""
+
 	def _regtest_run():
 		""">>> import threading
 		>>> import worker
