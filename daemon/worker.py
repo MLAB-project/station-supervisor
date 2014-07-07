@@ -2,8 +2,7 @@
 
 
 class worker():
-	##DUMMY CODE NOT DONE
-	def __init__(self._interval,test,triggers=[]):
+	def __init__(self,interval,test,triggers=[]):
 		if interval <1:
 			raise ValueError("interval must be 1 second or greater")
 		self._interval=interval
@@ -15,7 +14,7 @@ class worker():
 	def get_interval(self):
 		return self._interval
 
-	def set_interval(self._interval):
+	def set_interval(self,interval):
 		self._interval=interval
 
 	def run(self):
