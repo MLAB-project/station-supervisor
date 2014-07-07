@@ -20,6 +20,7 @@ class worker():
 	def run(self):
 		self.status="Running"
 		self._result=self._test()
+		self.status="Proccessing triggers"
 		for trigger in self._triggers:
 			trigger(self._result)
 		self.status="Idle"
