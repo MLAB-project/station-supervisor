@@ -22,7 +22,7 @@ class worker():
 		self._result=self._test()
 		self.status="Proccessing triggers"
 		for trigger in self._triggers:
-			trigger(self._result)
+			trigger.validate(self._result)
 		self.status="Idle"
 
 	def get_last_result(self):
