@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
+
 class worker():
 	##DUMMY CODE NOT DONE
-	triggers=[]
-	interval=10
-	test=None
-	def __init__(self,interval,test,triggers):
+	def __init__(self,interval,test,triggers=[]):
+		if interval <1:
+			raise ValueError("interval must be 1 second or greater")
+		super(worker,self).__init__()
 		self.interval=interval
 		self.test=test
 		self.triggers=triggers
@@ -14,11 +15,13 @@ class worker():
 
 	def set_interval(self,interval):
 		self.interval=interval
+
 	def __repr__(self):
 		return "worker("+\
 				",".join(str(i) for i in (self.interval,self.test, self.triggers))+\
 				")"
-	def run():
-		raise NotImplemented("NOT DONE")
-		for trigger in triggers:
+
+	def run(self):
+		result=self.test()
+		for trigger in self.triggers:
 			trigger(result)
