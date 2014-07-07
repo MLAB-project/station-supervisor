@@ -6,7 +6,6 @@ class worker():
 	def __init__(self,interval,test,triggers=[]):
 		if interval <1:
 			raise ValueError("interval must be 1 second or greater")
-		super(worker,self).__init__()
 		self.interval=interval
 		self.test=test
 		self.triggers=triggers

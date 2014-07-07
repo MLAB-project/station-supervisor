@@ -37,6 +37,7 @@ class scheduler:
 
 	def run(self):
 		self._exit=False
+		self.timer.clear()
 		while not self._exit:
 			with self.modlock:
 				w=self._dequeue()
@@ -48,7 +49,6 @@ class scheduler:
 		self._exit=True
 		with self.modlock:
 			self.timer.set()
-		self.timer.clear()
 
 	def work(self,workers):
 		for worker in workers:
@@ -61,10 +61,10 @@ class scheduler:
 	def _dequeue(self):
 		"""pops worker from the queue untill the next runtime is in the future"""
 		t=time()
-		w=[]
+		w=set()
 		q=self.runqueue
 		while q.peek([[-1]])[0]<=t:
-			w.extend(q.pop()[1])
+			w.update(q.pop()[1])
 		return w
 
 	def _requeue(self,workers):
@@ -109,14 +109,22 @@ class scheduler:
 			(0, ...)
 		"""
 	def _regtest_run():
-		""">>> import worker
+		""">>> import threading
+		>>> import worker
 		>>> s=scheduler()
-		>>> def pr(a="foo"):
-		...	print a
-		...
-		>>> s.add(worker.worker(2,pr))
+		>>> def pr(s):
+		...	print "Running once"
+		...	yield
+		...	print "Running twice"
+		...	s.stop()
+		...	yield
+		...	print "derp"
+		>>> s.add(worker.worker(2,pr(s).next))
 		>>> s.run()
+		Running once
+		Running twice
 		"""
+		# >>> threading.Thread(target=s.run).start()
 
 
 	def __repr__(self):
