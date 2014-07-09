@@ -115,10 +115,8 @@
 remove_worker(worker)
 get_all_workers()
 get_all_results()
-get_worker(worker)
 get_workers(string worker_name_glob)
-set_interval(worker)
-</y:MethodLabel>
+set_interval(worker)</y:MethodLabel>
               </y:UML>
             </y:UMLClassNode>
           </data>
