@@ -2,7 +2,7 @@
 
 
 class worker():
-	def __init__(self,interval,test,triggers=[]):
+	def __init__(self,interval,test,arg,limits,triggers=[]):
 		if interval <1:
 			raise ValueError("interval must be 1 second or greater")
 		self._interval=interval
@@ -19,7 +19,7 @@ class worker():
 
 	def run(self):
 		self.status="Running"
-		self._result=self._test()
+		self._result=self._test.check(arg,limits)
 		self.status="Proccessing triggers"
 		for trigger in self._triggers:
 			trigger.validate(self._result)
