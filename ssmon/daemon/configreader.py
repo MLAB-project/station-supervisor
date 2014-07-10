@@ -135,8 +135,11 @@ def _regtest_workerparse():
 	>>> import StringIO
 	>>> s=StringIO.StringIO('''[worker]\\n\
 	interval=10\\n\
-	sensor="dummy"''')
-	>>> s.name="myFile"
+	sensor="dummy"\\n\
+	args="Arg"\\n\
+	limits="9000"\\n\
+	#trigger=""\\n\
+	''')
 	>>> p=parse(s)
 	"""
 
