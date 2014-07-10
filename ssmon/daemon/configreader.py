@@ -6,7 +6,8 @@ if __name__ == "__main__":
 	import os
 	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import sensors
-
+import triggers
+from worker import worker 
 def splitfile(s):
 	"""Splits a string or file-like object and returns a list of numbers
 	and strings for each row
@@ -43,7 +44,7 @@ def splitfile(s):
 			f.append(row)
 		return f
 	except ValueError,ex:
-		raise ValueError(lexer.error_leader()+ ex.message)
+		raise ValueError(lexer.error_leader()+ ex.message )
 
 def _regtest_splitparse_fail_quote():
 	"""
@@ -55,6 +56,13 @@ def _regtest_splitparse_fail_quote():
 	ValueError: "myFile", line 2: No closing quotation
 	"""
 
+def _regtest_splitparse_fail_quote():
+	"""
+	>>> import StringIO
+	>>> s=StringIO.StringIO('str=foo\\nnum=1\\nnumlist=1,2,3')
+	>>> splitfile(s)
+	[['str', '=', 'foo'], ['num', '=', 1], ['numlist', '=', 1, 2, 3]]
+	"""
 
 def parse(filename):
 	try:
@@ -110,10 +118,18 @@ def parse_server(structure,section,stack):
 
 def parse_trigger(structure,section,stack):
 	pass
+
 def parse_worker(structure,section,stack):
 	opts={}
-	args=dict([i for i in post if i!="="] for post in stack)
-	pass
+	args=dict([post[0],post[2:]] for post in stack)
+	sensor=getattr(sensors,args["sensor"][0])
+	trigg=[getattr(triggers,i) for i in args.get("triggers",[])]
+	workerargs=args.get("args",None)
+	if workerargs==None:
+		workerargs=args["args"]
+	limits=args["limits"]
+	w=worker(args["interval"][0],sensor,workerargs,limits,trigg)
+	structure["workers"].append(w)
 
 def _regtest_serverparse():
 	"""
@@ -136,11 +152,13 @@ def _regtest_workerparse():
 	>>> s=StringIO.StringIO('''[worker]\\n\
 	interval=10\\n\
 	sensor="dummy"\\n\
-	args="Arg"\\n\
-	limits="9000"\\n\
-	#trigger=""\\n\
+	args=arg\\n\
+	limits=1, 9000\\n\
+	#triggers=""\\n\
 	''')
 	>>> p=parse(s)
+	>>> p["workers"]
+	[worker(10, <module 'sensors.dummy' ...>, ['arg'], [1, 9000], [])]
 	"""
 
 if __name__ == "__main__":
