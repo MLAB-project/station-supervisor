@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import shlex
 import doctest
-import sensors
 if __name__ == "__main__":
 	import sys
 	import os
 	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+import sensors
 
 def splitfile(s):
 	"""Splits a string or file-like object and returns a list of numbers

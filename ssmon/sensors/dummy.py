@@ -14,7 +14,7 @@ def repr(arg):
 	return "dummy testclass called with: " +arg
 
 def check(arg,limits):
-	return [new Pass(arg),Pass(limits)]
+	return [Pass(arg),Pass(limits)]
 
 
 if __name__ == "__main__":
