@@ -2,11 +2,13 @@
 
 
 class worker():
-	def __init__(self,interval,test,arg,limits,triggers=[]):
+	def __init__(self,interval,test,args,limits,triggers=[]):
 		if interval <1:
 			raise ValueError("interval must be 1 second or greater")
 		self._interval=interval
 		self._test=test
+		self._args=args
+		self._limits=limits
 		self._triggers=triggers
 		self._result=[]
 		self.status="Initial"
@@ -19,7 +21,7 @@ class worker():
 
 	def run(self):
 		self.status="Running"
-		self._result=self._test.check(arg,limits)
+		self._result=self._test.check(self._arg,self._limits)
 		self.status="Proccessing triggers"
 		for trigger in self._triggers:
 			trigger.validate(self._result)
@@ -33,5 +35,6 @@ class worker():
 
 	def __repr__(self):
 		return "worker("+\
-				",".join(str(i) for i in (self._interval,self._test, self._triggers))+\
+				", ".join(repr(i) for i in (self._interval,self._test,
+					self._args, self._limits, self._triggers))+\
 				")"
