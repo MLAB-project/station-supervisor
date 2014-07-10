@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import shlex
 import doctest
-
+import sensors
 if __name__ == "__main__":
 	import sys
 	import os
@@ -86,45 +86,58 @@ def parse(filename):
 	return structure
 
 def parse_section(structure,section,stack,errors):
-	classes={"worker":parse_worker,"server":parse_server,
-			"tigger":parse_trigger,"actor":parse_actor}
+	classes={"actor":parse_actor,"server":parse_server,
+			"tigger":parse_trigger,"worker":parse_worker}
 	try:
 		classes[section](structure,section,stack)
 	except Exception, e:
 		errors.append(e)
 
 
-def parse_worker(structure,section,stack):
+def parse_actor(structure,section,stack):
 	pass
 
 def parse_server(structure,section,stack): 
+	if len(structure["server"])>0:
+		raise ValueError("Dupplicate server entry!")
 	opts={}
 	args=dict([i for i in post if i!="="] for post in stack)
 	opts["port"]=args.pop("port",41133)
 	opts["hostname"]=args.pop("hostname","localhost")
 	structure["server"]=opts
 	if len(args)!=0:
-		raise RuntimeWarning("un used arguments to server"+repr(args.keys()))
+		raise RuntimeWarning("Un-used arguments to server: "+repr(args.keys()))
 
 def parse_trigger(structure,section,stack):
 	pass
-def parse_actor(structure,section,stack):
+def parse_worker(structure,section,stack):
+	opts={}
+	args=dict([i for i in post if i!="="] for post in stack)
 	pass
 
 def _regtest_serverparse():
 	"""
 	>>> import StringIO
-	>>> s=StringIO.StringIO('[server]\\nport=1010\\nhostname="foo"\\n[worker]')
-	>>> s.name="myFile"
+	>>> s=StringIO.StringIO('[server]\\nport=1010\\nhostname="foo"')
 	>>> p=parse(s)
 	>>> p["server"]["port"]
 	1010
 	>>> p["server"]["hostname"]
 	'foo'
-	>>> s=StringIO.StringIO('[server]\\nport=1010\\nhostname="foo"\\nmung="mung"\\n[worker]')
+	>>> s=StringIO.StringIO('[server]\\nport=1010\\nhostname="foo"\\nmung="mung"\\n')
 	>>> s.name="myFile"
 	>>> p=parse(s)
-	[RuntimeWarning("un used arguments to server['mung']",)]
+	[RuntimeWarning("Un-used arguments to server: ['mung']",)]
+	"""
+
+def _regtest_workerparse():
+	"""
+	>>> import StringIO
+	>>> s=StringIO.StringIO('''[worker]\\n\
+	interval=10\\n\
+	sensor="dummy"''')
+	>>> s.name="myFile"
+	>>> p=parse(s)
 	"""
 
 if __name__ == "__main__":
