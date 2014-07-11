@@ -8,24 +8,29 @@ if __name__ == "__main__":
 import sensors
 import triggers
 from worker import worker 
+lexer=None #Slightly horrible to simplify error-handling.
+
 def splitfile(s):
-	"""Splits a string or file-like object and returns a list of numbers
-	and strings for each row
-	>>> splitfile("foo,bar")
+	"""Break a file or string down in to tokens
+	
+	This breaks a file or a string in to a list of list where each
+	list represents a row in the in-file. Each such sub-list is then
+	poppulated with the string-and numeric tokens found on that row.
+	>>> list(splitfile("foo,bar"))
 	[['foo', 'bar']]
-	>>> splitfile("a= 1,2, 3")
+	>>> list(splitfile("a= 1,2, 3"))
 	[['a', '=', 1, 2, 3]]
-	>>> splitfile('a="1,2, 3"')
+	>>> list(splitfile('a="1,2, 3"'))
 	[['a', '=', '1,2, 3']]
 	>>> import StringIO
-	>>> splitfile(StringIO.StringIO('[Section]\\ndata=foo'))
+	>>> list(splitfile(StringIO.StringIO('[Section]\\ndata=foo')))
 	[['[', 'Section', ']'], ['data', '=', 'foo']]
 	"""
+	global lexer
 	lexer=shlex.shlex(s,getattr(s,"name",None))
 	lexer.commenters="#"
 	lexer.wordchars+=".-+()/&%!?"
 	lexer.whitespace=", \t"
-	f=[] #could be more efficient by yeilding row instead of building this
 	row=[]
 	try:
 		for i in lexer:
@@ -36,35 +41,42 @@ def splitfile(s):
 			elif i[0] in '\'"' and i[-1]==i[0]:
 				row.append(i[1:-1])
 			elif "\n" in i or "\r" in i:
-				f.append(row)
+				yield row
 				row=[]
 			elif i:
 				row.append(i)
 		if len(row)>0:
-			f.append(row)
-		return f
+			yield row
 	except ValueError,ex:
 		raise ValueError(lexer.error_leader()+ ex.message )
+
+def _regtest_splitparse():
+	"""
+	>>> import StringIO
+	>>> s=StringIO.StringIO('str=foo\\nnum=1\\nnumlist=1,2,3')
+	>>> list(splitfile(s))
+	[['str', '=', 'foo'], ['num', '=', 1], ['numlist', '=', 1, 2, 3]]
+	"""
 
 def _regtest_splitparse_fail_quote():
 	"""
 	>>> import StringIO
 	>>> s=StringIO.StringIO('[Section]\\ndata="foo')
 	>>> s.name="myFile"
-	>>> splitfile(s)
+	>>> list(splitfile(s))
 	Traceback (most recent call last):
 	ValueError: "myFile", line 2: No closing quotation
 	"""
 
-def _regtest_splitparse_fail_quote():
-	"""
-	>>> import StringIO
-	>>> s=StringIO.StringIO('str=foo\\nnum=1\\nnumlist=1,2,3')
-	>>> splitfile(s)
-	[['str', '=', 'foo'], ['num', '=', 1], ['numlist', '=', 1, 2, 3]]
-	"""
 
 def parse(filename):
+	"""
+	blablablabla....
+
+	filename -- might be a string representing a file to read or an 
+						open file-descriptor, it will be closed when the
+						parser terminates.
+	"""
 	try:
 		if hasattr(filename,"read"):
 			f=filename
@@ -72,7 +84,8 @@ def parse(filename):
 			f= open(filename,"r")
 		config=splitfile(f)
 	finally:
-		f.close()
+		pass
+		#f.close()
 	
 	structure={"server":{}, "workers":[], "triggers":[], "actors":[]}
 	section=None
@@ -94,7 +107,7 @@ def parse(filename):
 	return structure
 
 def parse_section(structure,section,stack,errors):
-	classes={"actor":parse_actor,"server":parse_server,
+	classes={"actor":parse_actor,"noop":lambda x,y,z: None ,"server":parse_server,
 			"tigger":parse_trigger,"worker":parse_worker}
 	try:
 		classes[section](structure,section,stack)
@@ -114,7 +127,9 @@ def parse_server(structure,section,stack):
 	opts["hostname"]=args.pop("hostname","localhost")
 	structure["server"]=opts
 	if len(args)!=0:
-		raise RuntimeWarning("Un-used arguments to server: "+repr(args.keys()))
+		raise RuntimeWarning(lexer.error_leader()+\
+				"Above. Un-used arguments to server: "+\
+				repr(args.keys()))
 
 def parse_trigger(structure,section,stack):
 	pass
@@ -140,10 +155,11 @@ def _regtest_serverparse():
 	1010
 	>>> p["server"]["hostname"]
 	'foo'
-	>>> s=StringIO.StringIO('[server]\\nport=1010\\nhostname="foo"\\nmung="mung"\\n')
+	>>> s=StringIO.StringIO('[server]\\nport=1010\\n\
+			hostname="foo"\\nmung="mung"\\n[noop]\\n#noop\\n#noop')
 	>>> s.name="myFile"
 	>>> p=parse(s)
-	[RuntimeWarning("Un-used arguments to server: ['mung']",)]
+	[RuntimeWarning('"myFile", line 6: Above. Un-used arguments to server: [\\'mung\\']',)]
 	"""
 
 def _regtest_workerparse():
