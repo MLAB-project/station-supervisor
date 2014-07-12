@@ -20,14 +20,14 @@ class basesensor(object):
 		"""
 		self._value=None
 		self._checks=None
-		raise NotImplemented("run not implemented")
+		raise NotImplementedError("run not implemented")
 
 	def check(self):
 		"""Runs the tests and compares to the threshold values.
 
 		returns a list of Pass and Fail objects. These should allso be
 		stored inside the self._checks atribute."""
-		raise NotImplemented("check not implemented")
+		raise NotImplementedError("check not implemented")
 
 	@property
 	def lastvalue(self):
@@ -44,7 +44,7 @@ class basesensor(object):
 		
 		for example: "19/200GiB (22.5%) used"
 		"""
-		raise NotImplemented("result_repr not implemented")
+		raise NotImplementedError("result_repr not implemented")
 
 	@property
 	def repr_check(self):
@@ -53,13 +53,13 @@ class basesensor(object):
 		
 		for example: "<20% used (FAIL), >90GiB Free (Pass)"
 		"""
-		raise NotImplemented("repr_check not implemented")
+		raise NotImplementedError("repr_check not implemented")
 
 	def __str__(self):
 		"""A human readable representation of the sensor.
 		
 		For example "Disk usage: /dev/sda1" """
-		raise NotImplemented("str not implemented")
+		raise NotImplementedError("str not implemented")
 
 	if __name__ == "__main__":
 		import doctest
