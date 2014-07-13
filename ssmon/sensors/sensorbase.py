@@ -60,6 +60,9 @@ class sensorbase(object):
 		For example "Disk usage: /dev/sda1" """
 		raise NotImplementedError("str not implemented")
 
+	def __repr__(self):
+		return self.__str__()
+
 	if __name__ == "__main__":
 		import doctest
 		doctest.testmod()
