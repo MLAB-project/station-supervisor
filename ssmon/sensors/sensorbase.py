@@ -20,6 +20,8 @@ class sensorbase(object):
 		"""
 		self._value=None
 		self._checks=None
+		self.target=target
+		self.limits=limits
 
 	def check(self):
 		"""Runs the tests and compares to the threshold values.
