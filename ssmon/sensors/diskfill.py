@@ -80,15 +80,52 @@ class diskfill(sensorbase):
 		for i in self.limits:
 			if type(i)==float and i <=1:
 				if perc <= i:
-					res.append(Pass())
+					res.append(Pass("{:.2%} used < {:.2%}".format(perc,i)))
 				else:
 					res.append(Fail("{:.2%} is more than the allowed {:.2%} used space".format(perc,i)))
 			else:
 				if avail >= i:
-					res.append(Pass())
+					res.append(Pass("{} free > {}".format(humanize(avail),humanize(i))))
 				else:
-					res.append(Fail("{} is less than the allowed{} free space".format(humanize(avail),humanize(i))))
+					res.append(Fail("{} is less than the allowed {} free space".format(humanize(avail),humanize(i))))
+		self._checks=res
 		return res
+
+	def repr_result(self):
+		""" returns a human-readable representation of the last data collected
+		>>> d=diskfill("/dev/sdtest",[10**7,2.5*10**7,0.9,0.7])
+		>>> d.repr_result()
+		'70.41 GiB/94.13 GiB (74.80% used)'
+		"""
+		if self._value==None:
+			self._run()
+		return "{}/{} ({:.2%} used)".format(
+				humanize(self._value[0]),
+				humanize(self._value[1]),
+				float(self._value[0])/self._value[1])
+
+	def repr_check(self):
+		"""
+		>>> d=diskfill("/dev/sdtest",[10**7,2.5*10**7,0.9,0.7])
+		>>> d.check()
+		[Pass, Fail, Pass, Fail]
+		>>> d.repr_check()
+		'Fail:23.72 GiB is less than the allowed 23.84 GiB free space, \\nFail:74.80% is more than the allowed 70.00% used space'
+		>>> d=diskfill("/dev/sdtest",[10**7])
+		>>> d.check()
+		[Pass]
+		>>> d.repr_check()
+		'All Pass:70.41 GiB/94.13 GiB (74.80% used)'
+		"""
+		ch=sorted(self._checks)
+		s= ", \n".join(str(i) for i in ch if not i)
+		if s:
+			return s
+		return "All Pass:"+ self.repr_result()
+
+
+	def __str__(self):
+		return self.device
 	
 
 def humanize(kbytes):
