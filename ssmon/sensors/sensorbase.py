@@ -5,7 +5,7 @@ if __name__ == "__main__":
 	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils.statuses import Pass,Fail
 
-class basesensor(object):
+class sensorbase(object):
 	def __init__(self,target,limits):
 		"""Base class for a sensor,
 
@@ -20,7 +20,6 @@ class basesensor(object):
 		"""
 		self._value=None
 		self._checks=None
-		raise NotImplementedError("run not implemented")
 
 	def check(self):
 		"""Runs the tests and compares to the threshold values.
@@ -37,7 +36,6 @@ class basesensor(object):
 	def lastcheck(self):
 		return self._checks
 
-	@property
 	def repr_result(self):
 		"""Should return a human readable representation of the last last
 		run.
@@ -46,7 +44,6 @@ class basesensor(object):
 		"""
 		raise NotImplementedError("result_repr not implemented")
 
-	@property
 	def repr_check(self):
 		"""Should return a human readable representation of the last
 		check. Prefferably with any fails first.
