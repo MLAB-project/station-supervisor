@@ -14,7 +14,7 @@ class Status(object):
 		return self.__name__
 
 	def __str__(self):
-		return self.__name__+self.message
+		return self.__name__+":"+self.message
 
 	def getmsg(self):
 		return self.message
