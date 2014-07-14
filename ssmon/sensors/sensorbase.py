@@ -47,12 +47,19 @@ class sensorbase(object):
 		raise NotImplementedError("result_repr not implemented")
 
 	def repr_check(self):
-		"""Should return a human readable representation of the last
-		check. Prefferably with any fails first.
+		"""Attemts to human readable representation of the last
+		check with any fails first.
 		
 		for example: "<20% used (FAIL), >90GiB Free (Pass)"
+
+		Needs to be overridden if the results are not stored in
+		self._checks
 		"""
-		raise NotImplementedError("repr_check not implemented")
+		ch=sorted(self._checks)
+		s= ", \n".join(str(i) for i in ch if not i)
+		if s:
+			return s
+		return "All Pass:"+ self.repr_result()
 
 	def __str__(self):
 		"""A human readable representation of the sensor.

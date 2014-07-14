@@ -8,6 +8,11 @@ from utils.statuses import Pass,Fail
 from sensorbase import sensorbase
 
 class diskfill(sensorbase):
+	"""
+	Sensor to see if the usage of a disk is nearing the disks capacity.
+
+	Relies on the -k and --output parameters to du.
+	"""
 	def __init__(self,device,limits):
 		"""
 		device -- should be a device or mount point  like /dev/sda1 or /home
@@ -104,7 +109,7 @@ class diskfill(sensorbase):
 				humanize(self._value[1]),
 				float(self._value[0])/self._value[1])
 
-	def repr_check(self):
+	def _test_repr_check():
 		"""
 		>>> d=diskfill("/dev/sdtest",[10**7,2.5*10**7,0.9,0.7])
 		>>> d.check()
@@ -117,11 +122,6 @@ class diskfill(sensorbase):
 		>>> d.repr_check()
 		'All Pass:70.41 GiB/94.13 GiB (74.80% used)'
 		"""
-		ch=sorted(self._checks)
-		s= ", \n".join(str(i) for i in ch if not i)
-		if s:
-			return s
-		return "All Pass:"+ self.repr_result()
 
 
 	def __str__(self):
