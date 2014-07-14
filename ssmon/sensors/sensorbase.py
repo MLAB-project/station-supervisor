@@ -55,6 +55,8 @@ class sensorbase(object):
 		Needs to be overridden if the results are not stored in
 		self._checks
 		"""
+		if not self._checks:
+			self.check()
 		ch=sorted(self._checks)
 		s= ", \n".join(str(i) for i in ch if not i)
 		if s:

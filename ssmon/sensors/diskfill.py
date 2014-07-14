@@ -117,6 +117,8 @@ class diskfill(sensorbase):
 		>>> d.repr_check()
 		'Fail:23.72 GiB is less than the allowed 23.84 GiB free space, \\nFail:74.80% is more than the allowed 70.00% used space'
 		>>> d=diskfill("/dev/sdtest",[10**7])
+		>>> d.repr_check()
+		'All Pass:70.41 GiB/94.13 GiB (74.80% used)'
 		>>> d.check()
 		[Pass]
 		>>> d.repr_check()
