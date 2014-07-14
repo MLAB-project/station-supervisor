@@ -6,16 +6,22 @@ if __name__ == "__main__":
 	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils.statuses import Pass,Fail
 
-def run(arg="noarg"):
-	return [arg]
-	
+from sensorbase import sensorbase
 
-def repr(arg):
-	return "dummy testclass called with: " +arg
+class dummy(sensorbase):
+	"""Dummy, allways returns one Pass"""
+	def __init__(self,servers,limits):
+		self.limits=limits
+		self._value=None
+		self._checks=[Pass(arg),Pass(limits)]
+		
+	def check(self):
+		return self._checks
 
-def check(arg,limits):
-	return [Pass(arg),Pass(limits)]
-
+	def repr_result(self):
+		return "Dummycheck: a-alright!"
+	def __str__(self):
+		return "Dummy, allways returns one Pass"
 
 if __name__ == "__main__":
 	import doctest
