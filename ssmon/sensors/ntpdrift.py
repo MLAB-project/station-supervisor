@@ -54,7 +54,6 @@ class ntpdrift(sensorbase):
 	[Pass, Fail]
 	>>> ntpdrift("ntp1.sp.se",[2,0.00001]).check()
 	[Pass, Fail]
-
 		"""
 		res=[]
 		diff=self._run(self.server)
@@ -65,6 +64,13 @@ class ntpdrift(sensorbase):
 			else:
 				res.append(Fail("{} was {:.2f} seconds off".format(self.server,diff)))
 		return res
+
+	def repr_result(self):
+		return "Difference between system time and {} was\
+	{:.2f}".format(self.server,self._value)
+
+	def __str__(self):
+		return "Time-diff from "+self.server
 
 if __name__ == "__main__":
 	import doctest
