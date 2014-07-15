@@ -137,11 +137,12 @@ def parse_trigger(structure,section,stack):
 def parse_worker(structure,section,stack):
 	opts={}
 	args=dict([post[0],post[2:]] for post in stack)
-	sensor=getattr(sensors,args["sensor"][0])
+	sensorclass=getattr(sensors,args["sensor"][0])
+	sensor=getattr(sensorclass,args["sensor"][0])
+
 	trigg=[getattr(triggers,i) for i in args.get("triggers",[])]
-	workerargs=args.get("args",None)
-	if workerargs==None:
-		workerargs=args["args"]
+
+	workerargs=args.get("args",[None])
 	limits=args["limits"]
 	w=worker(args["interval"][0],sensor,workerargs,limits,trigg)
 	structure["workers"].append(w)
@@ -174,7 +175,7 @@ def _regtest_workerparse():
 	''')
 	>>> p=parse(s)
 	>>> p["workers"]
-	[worker(10, <module 'sensors.dummy' ...>, ['arg'], [1, 9000], [])]
+	[worker(10, Dummy, allways returns one Pass, [])]
 	"""
 
 if __name__ == "__main__":
