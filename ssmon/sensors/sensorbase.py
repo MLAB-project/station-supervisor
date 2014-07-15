@@ -63,6 +63,7 @@ class sensorbase(object):
 			return s
 		return "All Pass:"+ self.repr_result()
 
+	#The Str and repr is alledgedly the wrong way around...
 	def __str__(self):
 		"""A human readable representation of the sensor.
 		
