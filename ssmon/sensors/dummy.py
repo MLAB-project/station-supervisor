@@ -10,10 +10,10 @@ from sensorbase import sensorbase
 
 class dummy(sensorbase):
 	"""Dummy, allways returns one Pass"""
-	def __init__(self,servers,limits):
+	def __init__(self,arg,limits):
 		self.limits=limits
 		self._value=None
-		self._checks=[Pass(arg),Pass(limits)]
+		self._checks=[Pass(limits)]
 		
 	def check(self):
 		return self._checks
