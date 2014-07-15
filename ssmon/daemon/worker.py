@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+if __name__ == "__main__":
+	import sys
+	import os
+	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 
 class worker():
 	"""Class to contain periodic test case.
@@ -8,10 +13,10 @@ class worker():
 	The results of these tests are fed to a list of triggers.
 	These Triggers should then invoke an action via the trrigger class.
 	"""
-	def __init__(self,interval,test,args,limits,triggers=[]):
+	def __init__(self,interval,sensor,args,limits,triggers=[]):
 		"""
 		interval -- the time between runs in seconds.
-		test     -- name of the test-module to run.
+		sensor   -- sensorbase-class derivative to run.
 		args     -- the argument to be sent as the first argument to the
 							tests  check function.
 		limits   -- the second argument to the tests check()-function.
@@ -21,24 +26,21 @@ class worker():
 		if interval <1:
 			raise ValueError("interval must be 1 second or greater")
 		self._interval=interval
-		self._test=test
-		self._args=args
-		self._limits=limits
+		self._sensor=sensor(args,limits)
 		self._triggers=triggers
-		self._result=[]
-		self.status="Initial"
+		self._status="Initial"
 
 	def run(self):
 		"""Runs the actual test and appropriate triggers.
 
 		This method is called by the scheduler at the requested interval.
 		"""
-		self.status="Running"
-		self._result=self._test.check(self._arg,self._limits)
-		self.status="Proccessing triggers"
+		self._status="Running"
+		result=self._sensor.check()
+		self._status="Proccessing triggers"
 		for trigger in self._triggers:
-			trigger.validate(self._result)
-		self.status="Idle"
+			trigger.validate(result)
+		self._status="Idle"
 
 	def get_interval(self):
 		return self._interval
@@ -46,14 +48,30 @@ class worker():
 	def set_interval(self,interval):
 		self._interval=interval
 
-	def get_last_result(self):
-		return self._result
+	@property
+	def result(self):
+		return self._sensor.lastcheck
 
-	def get_status(self):
-		return self.status
+	@property
+	def status(self):
+		return self._status
 
 	def __repr__(self):
 		return "worker("+\
-				", ".join(repr(i) for i in (self._interval,self._test,
-					self._args, self._limits, self._triggers))+\
+				", ".join(repr(i) for i in (self._interval,self._sensor,
+					self._triggers))+\
 				")"
+
+	def _test_basic_run():
+		"""
+		>>> from sensors.dummy import dummy
+		>>> w=worker(10,dummy,"Yey","NO LIMITS ALLOWED!")
+		>>> w.result
+		[Pass]
+		>>> [str(i) for i in w.result]
+		['Pass:NO LIMITS ALLOWED!']
+		"""
+
+if __name__ == "__main__":
+	import doctest
+	doctest.testmod()
