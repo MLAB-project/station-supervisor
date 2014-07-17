@@ -27,7 +27,7 @@ class worker():
 			raise ValueError("interval must be 1 second or greater")
 		self._interval=interval
 		self._sensor=sensor(args,limits)
-		self._triggers=triggers
+		self.triggers=triggers
 		self._status="Initial"
 
 	def run(self):
@@ -38,7 +38,7 @@ class worker():
 		self._status="Running"
 		result=self._sensor.check()
 		self._status="Proccessing triggers"
-		for trigger in self._triggers:
+		for trigger in self.triggers:
 			trigger.validate(result)
 		self._status="Idle"
 
@@ -59,7 +59,7 @@ class worker():
 	def __repr__(self):
 		return "worker("+\
 				", ".join(repr(i) for i in (self._interval,self._sensor,
-					self._triggers))+\
+					self.triggers))+\
 				")"
 
 	def _test_basic_run():
