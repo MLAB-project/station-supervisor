@@ -114,13 +114,13 @@ def parse_section(structure,section,stack,errors):
 		classes[section](structure,section,stack)
 	except Exception, e:
 		errors.append(e)
-		#raise ##REBUG
+		raise ##DEBUG
 
 
 def parse_actor(structure,section,stack):
 	opts={}
 	#args=dict([i for i in post if i!="="] for post in stack)
-	args=dict([post[0].lower(),post[2:]] for post in stack)
+	args=dictify(stack)
 	actorname=args["name"][0]
 	if structure["actors"].has_key(actorname):
 		raise ValueError(lexer.error_leader()+" Dupplicate actor: "+actorname)
@@ -147,7 +147,8 @@ def parse_trigger(structure,section,stack):
 
 def parse_worker(structure,section,stack):
 	opts={}
-	args=dict([post[0],post[2:]] for post in stack)
+	#args=dict([post[0],post[2:]] for post in stack)
+	args=dictify(stack)
 	sensorclass=getattr(sensors,args["sensor"][0])
 	sensor=getattr(sensorclass,args["sensor"][0])
 
@@ -157,6 +158,24 @@ def parse_worker(structure,section,stack):
 	limits=args["limits"]
 	w=worker(args["interval"][0],sensor,workerargs,limits,trigg)
 	structure["workers"].append(w)
+
+def dictify(struct):
+	args={}
+	n=0
+	for post in struct:
+		if len(post)==0:
+			continue
+		name=post[0].lower()
+		if args.has_key(name):
+			raise SyntaxError(lexer.error_leader() +"Near, dupplicate atribute:" +name )
+		if len(post)<=2:
+			args[name]=[]
+		elif post[1]=="=":
+			n+=1
+			args[name]=post[2:]
+		else:
+			raise SyntaxError(lexer.error_leader() +"malformed command")
+	return args
 
 def _regtest_serverparse():
 	"""
@@ -205,14 +224,12 @@ def _regtest_actorparse():
 	"""
 
 def _regtest_triggerparse():
-	print "TEST DISSABLED" #REM
-	pass #REM
 	"""
 	>>> import StringIO
 	>>> s=StringIO.StringIO('''[actor]\\n\
 	type=runshell\\n\
-	name="rebootonallfail"\\n\
-	arg=echo, "test won't, reboot"\\n\
+	name="reboot"\\n\
+	arg=echo, "test won't reboot"\\n\
 	\\n\
 	[trigger]\\n\
 	name="rebootonallfail"\\n\
@@ -221,7 +238,7 @@ def _regtest_triggerparse():
 	''')
 	>>> p=parse(s)
 	>>> p["triggers"]
-	[worker(10, Dummy, allways returns one Pass, [])]
+	{rebotonallfail(allfail(['echo', 'test won\'t reboot']))}
 	"""
 
 if __name__ == "__main__":
