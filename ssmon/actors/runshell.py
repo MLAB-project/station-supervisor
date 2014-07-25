@@ -25,6 +25,9 @@ class runshell(object):
 	def act(self):
 		subprocess.Popen(self.args)
 	
-	def __str__(self):
+	def __repr__(self):
 		return "runshell("+repr(self.args)+")"
+
+	def __str__(self):
+		return repr(self)
 
