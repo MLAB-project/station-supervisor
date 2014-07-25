@@ -7,6 +7,7 @@ if __name__ == "__main__":
 	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import sensors
 import triggers
+import actors
 from worker import worker 
 lexer=None #Slightly horrible to simplify error-handling.
 
@@ -87,12 +88,12 @@ def parse(filename):
 		pass
 		#f.close()
 	
-	structure={"server":{}, "workers":[], "triggers":[], "actors":[]}
+	structure={"server":{}, "workers":[], "triggers":{}, "actors":{}}
 	section=None
 	stack=[]
 	errors=[]
 	for i in config:
-		if i[0]=="[" and i[-1]=="]":
+		if len(i)==3 and i[0]=="[" and i[-1]=="]":
 			if len(i) >= 3:
 				oldsection=section
 				section=i[1].lower()
@@ -108,19 +109,29 @@ def parse(filename):
 
 def parse_section(structure,section,stack,errors):
 	classes={"actor":parse_actor,"noop":lambda x,y,z: None ,"server":parse_server,
-			"tigger":parse_trigger,"worker":parse_worker}
+			"trigger":parse_trigger,"worker":parse_worker}
 	try:
 		classes[section](structure,section,stack)
 	except Exception, e:
 		errors.append(e)
+		#raise ##REBUG
 
 
 def parse_actor(structure,section,stack):
-	pass
+	opts={}
+	#args=dict([i for i in post if i!="="] for post in stack)
+	args=dict([post[0].lower(),post[2:]] for post in stack)
+	actorname=args["name"][0]
+	if structure["actors"].has_key(actorname):
+		raise ValueError(lexer.error_leader()+" Dupplicate actor: "+actorname)
+	actortype=args["type"][0]
+	actorargs=args.get("arg",args.get("args",[]))
+	actor=getattr(getattr(actors,actortype),actortype)(actorargs)
+	structure["actors"][actorname]=actor
 
 def parse_server(structure,section,stack): 
 	if len(structure["server"])>0:
-		raise ValueError("Dupplicate server entry!")
+		raise ValueError(lexer.error_leader()+"Dupplicate server entry!")
 	opts={}
 	args=dict([i for i in post if i!="="] for post in stack)
 	opts["port"]=args.pop("port",41133)
@@ -175,6 +186,41 @@ def _regtest_workerparse():
 	''')
 	>>> p=parse(s)
 	>>> p["workers"]
+	[worker(10, Dummy, allways returns one Pass, [])]
+	"""
+
+def _regtest_actorparse():
+	"""
+	>>> import StringIO
+	>>> s=StringIO.StringIO('''[actor]\\n\
+	type=runshell\\n\
+	name="shell_echo"\\n\
+	arg=echo, test\\n\
+	''')
+	>>> p=parse(s)
+	>>> p["actors"]
+	{'shell_echo': runshell(['echo', 'test'])}
+	>>> p["actors"]["shell_echo"].act()
+	>>> #should print test, not captured by doctest
+	"""
+
+def _regtest_triggerparse():
+	print "TEST DISSABLED" #REM
+	pass #REM
+	"""
+	>>> import StringIO
+	>>> s=StringIO.StringIO('''[actor]\\n\
+	type=runshell\\n\
+	name="rebootonallfail"\\n\
+	arg=echo, "test won't, reboot"\\n\
+	\\n\
+	[trigger]\\n\
+	name="rebootonallfail"\\n\
+	trigger=allfail\\n\
+	effect=reboot\\n\
+	''')
+	>>> p=parse(s)
+	>>> p["triggers"]
 	[worker(10, Dummy, allways returns one Pass, [])]
 	"""
 
