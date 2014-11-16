@@ -7,14 +7,12 @@ import datetime
 import sys
 from pymlab import config
 import os
-
-port    = 1
-req_freq = 20.0 #7.1588
+import frequency_config
 
 #### Sensor Configuration ###########################################
 
 cfg = config.Config()
-cfg.load_file("./config_file.py")
+cfg.load_file("./bus_config.py")
 
 cfg.initialize()
 
@@ -38,7 +36,7 @@ fcount.set_GPS()	# set GPS configuration
 try:
         while True:
             now = datetime.datetime.now()
-            filename = time.strftime("%Y%m%d%H")+"0000_freq.csv"
+            filename = frequency_config.path + time.strftime("%Y%m%d%H")+"0000_freq.csv"
             if not os.path.exists(filename):
                 with open(filename, "a") as f:
                     f.write('#timestamp,LO_Frequency \n')
@@ -50,9 +48,9 @@ try:
                     f.write("%.1f,%.1f\n" % (time.time(), frequency))
 
 
-                if (len(sys.argv) == 3):
-                    fgen.route()
-                    regs = fgen.set_freq(frequency/1e6, float(req_freq))
+                #if (len(sys.argv) == 3):
+                fgen.route()
+                regs = fgen.set_freq(frequency/1e6, float(frequency_config.req_freq))
                 now = datetime.datetime.now()
 
             fgen.route()
@@ -63,7 +61,7 @@ try:
             fxtal = fdco / rfreq
 
             sys.stdout.write("Current Freq.: " + str(frequency/1e6) + " MHz ")
-            sys.stdout.write("Req. Freq.: " + str(req_freq) + "MHz  Freq diff.: " + str(frequency - req_freq*1e6) + "Hz Time: " + str(now.second) + "s \r")
+            sys.stdout.write("Req. Freq.: " + str(frequency_config.req_freq) + "MHz  Freq diff.: " + str(frequency - frequency_config.req_freq*1e6) + "Hz Time: " + str(now.second) + "s \r")
 
             sys.stdout.flush()
 
