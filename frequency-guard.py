@@ -36,7 +36,7 @@ fcount.set_GPS()	# set GPS configuration
 try:
         while True:
             now = datetime.datetime.now()
-            filename = frequency_config.path + time.strftime("%Y%m%d%H", gmtime())+"0000_"+frequency_config.StationName+"_freq.csv"
+            filename = frequency_config.path + time.strftime("%Y%m%d%H", time.gmtime())+"0000_"+frequency_config.StationName+"_freq.csv"
             if not os.path.exists(filename):
                 with open(filename, "a") as f:
                     f.write('#timestamp,LO_Frequency \n')
