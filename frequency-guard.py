@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# 
+#
 # Sample of measuring and frequency correction with ACOUNTER02A
 
 import time
@@ -8,6 +8,9 @@ import sys
 from pymlab import config
 import os
 import frequency_config
+
+#import logging
+#logging.basicConfig(level=logging.DEBUG)
 
 #### Sensor Configuration ###########################################
 
@@ -60,8 +63,7 @@ try:
             fdco = (frequency/1e6) * hsdiv * n1
             fxtal = fdco / rfreq
 
-            sys.stdout.write("Current Freq.: " + str(frequency/1e6) + " MHz ")
-            sys.stdout.write("Req. Freq.: " + str(frequency_config.req_freq) + "MHz  Freq diff.: " + str(frequency - frequency_config.req_freq*1e6) + "Hz Time: " + str(now.second) + "s \r")
+            sys.stdout.write("Current Freq.: %3.7f MHz, Req. Freq.: %3.6f MHz, Freq diff.: %3.1f Hz, Time: %d s \r" % (frequency/1e6, frequency_config.req_freq, (frequency - frequency_config.req_freq*1e6), now.second ))
 
             sys.stdout.flush()
 
