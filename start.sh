@@ -13,6 +13,6 @@ sleep 3
 #jack_connect system:capture_2 whistle:input_q
 #jack_connect whistle:output_i system:playback_1
 #jack_connect whistle:output_q system:playback_2
-~/Bolidozor/uFlu/radio-observer -c ~/Bolidozor/uFlu/uFlu-R0.json&
+~/git/radio-observer/radio-observer -c ~/Bolidozor/uFlu/uFlu-R1.json&
 sleep 3
 #jack_connect TEST-R0:midi_out pysdr:input_events
