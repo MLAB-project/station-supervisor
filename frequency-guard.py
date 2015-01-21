@@ -36,6 +36,9 @@ fcount.set_GPS()	# set GPS configuration
 
 #### Data Logging ###################################################
 
+
+sys.stdout.write("Carrier Freq.: %3.6f MHz, Echo Freq.: %3.3f kHz\r\n\n" % (frequency_config.carrier_freq, frequency_config.echo_freq * 1000))
+
 try:
         while True:
             now = datetime.datetime.now()
