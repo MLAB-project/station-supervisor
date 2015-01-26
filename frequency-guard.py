@@ -7,10 +7,29 @@ import datetime
 import sys
 from pymlab import config
 import os
-import frequency_config
+from mlabutils import ejson
+
 
 #import logging
 #logging.basicConfig(level=logging.DEBUG)
+
+parser = ejson.Parser()
+
+value = parser.parse_file(sys.argv[1])
+
+# path to metadata output directory
+path = value['configurations'][0]['children'][0]['metadata_path']
+
+# required frequency
+carrier_freq = value['configurations'][0]['children'][0]['transmitter_carrier']	# Beacon frequency
+low_detect_freq = value['configurations'][0]['children'][0]['children'][1]['low_detect_freq']
+hi_detect_freq = value['configurations'][0]['children'][0]['children'][1]['hi_detect_freq']
+
+echo_freq = (hi_detect_freq + low_detect_freq)/2	# hearing frequency
+req_freq = (carrier_freq - echo_freq) * 2
+
+# station name
+StationName = value['configurations'][0]['children'][0]['origin']
 
 #### Sensor Configuration ###########################################
 
