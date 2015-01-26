@@ -15,9 +15,9 @@ from mlabutils import ejson
 
 parser = ejson.Parser()
 
-if len(sys.argv) != 2:
-    sys.stderr.write("Invalid number of arguments. Missing path to a config file!\n")
-    sys.stderr.write("Usage: %s config_file.json\n" % (sys.argv[0], ))
+if len(sys.argv) != 3:
+    sys.stderr.write("Invalid number of arguments. Missing path to a config files!\n")
+    sys.stderr.write("Usage: %s config_file.json i2c_bus.cfg\n" % (sys.argv[0], ))
     sys.exit(1)
 
 value = parser.parse_file(sys.argv[1])
@@ -39,7 +39,7 @@ StationName = value['configurations'][0]['children'][0]['origin']
 #### Sensor Configuration ###########################################
 
 cfg = config.Config()
-cfg.load_file("./bus_config.py")
+cfg.load_file(sys.argv[2])
 
 cfg.initialize()
 
@@ -90,7 +90,7 @@ try:
             fdco = (frequency/1e6) * hsdiv * n1
             fxtal = fdco / rfreq
 
-            sys.stdout.write("Current Freq.: %3.7f MHz, Req. Freq.: %3.6f MHz, Freq diff.: %3.1f Hz, Time: %d s \r" % (frequency/1e6, req_freq/1e6, (frequency - req_freq), now.second ))
+            sys.stdout.write("Current Freq.: %3.7f MHz, Req. Freq.: %3.6f MHz, Freq Error: %3.1f Hz, Time: %d s \r" % (frequency/1e6, req_freq/1e6, (frequency - req_freq), now.second ))
 
             sys.stdout.flush()
 
