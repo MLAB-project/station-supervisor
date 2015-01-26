@@ -15,6 +15,11 @@ from mlabutils import ejson
 
 parser = ejson.Parser()
 
+if len(sys.argv) != 2:
+    sys.stderr.write("Invalid number of arguments. Missing path to a config file!\n")
+    sys.stderr.write("Usage: %s config_file.json\n" % (sys.argv[0], ))
+    sys.exit(1)
+
 value = parser.parse_file(sys.argv[1])
 
 # path to metadata output directory
@@ -53,15 +58,15 @@ fcount.route()
 fcount.set_GPS()	# set GPS configuration
 
 
-#### Data Logging ###################################################
+#### Data measurement and logging ###################################################
 
 
-sys.stdout.write("Carrier Freq.: %3.6f MHz, Echo Freq.: %3.3f kHz\r\n\n" % (frequency_config.carrier_freq, frequency_config.echo_freq * 1000))
+sys.stdout.write("Carrier Freq.: %3.6f MHz, Echo Freq.: %3.3f kHz, Req. Freq.: %3.6f MHz\r\n\n" % (carrier_freq/1e6, echo_freq/1e3, req_freq/1e6))
 
 try:
         while True:
             now = datetime.datetime.now()
-            filename = frequency_config.path + time.strftime("%Y%m%d%H", time.gmtime())+"0000_"+frequency_config.StationName+"_freq.csv"
+            filename = path + time.strftime("%Y%m%d%H", time.gmtime())+"0000_"+StationName+"_freq.csv"
             if not os.path.exists(filename):
                 with open(filename, "a") as f:
                     f.write('#timestamp,LO_Frequency \n')
@@ -75,7 +80,7 @@ try:
 
                 #if (len(sys.argv) == 3):
                 fgen.route()
-                regs = fgen.set_freq(frequency/1e6, float(frequency_config.req_freq))
+                regs = fgen.set_freq(frequency/1e6, float(req_freq/1e6))
                 now = datetime.datetime.now()
 
             fgen.route()
@@ -85,7 +90,7 @@ try:
             fdco = (frequency/1e6) * hsdiv * n1
             fxtal = fdco / rfreq
 
-            sys.stdout.write("Current Freq.: %3.7f MHz, Req. Freq.: %3.6f MHz, Freq diff.: %3.1f Hz, Time: %d s \r" % (frequency/1e6, frequency_config.req_freq, (frequency - frequency_config.req_freq*1e6), now.second ))
+            sys.stdout.write("Current Freq.: %3.7f MHz, Req. Freq.: %3.6f MHz, Freq diff.: %3.1f Hz, Time: %d s \r" % (frequency/1e6, req_freq/1e6, (frequency - req_freq), now.second ))
 
             sys.stdout.flush()
 
