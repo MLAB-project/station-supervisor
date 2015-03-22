@@ -1,3 +1,4 @@
+sleep 10
 ulimit -c unlimited
 qjackctl&
 ~/git/pysdr/pysdr-waterfall  -b 16384&
@@ -9,7 +10,8 @@ sleep 3
 jack_connect system:capture_1 whistle:input_i
 jack_connect system:capture_2 whistle:input_q
 jack_connect radio-observer:midi_out pysdr:input_events
-alsa_out -d hw:2 -r48000&
-sleep 2
-jack_connect whistle:output_i alsa_out:playback_1
-jack_connect whistle:output_q alsa_out:playback_2
+#alsa_out -d hw:2 -r96000&
+#sleep 2
+#jack_connect whistle:output_i alsa_out:playback_1
+#jack_connect whistle:output_q alsa_out:playback_2
+xgps&
