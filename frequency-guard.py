@@ -99,8 +99,8 @@ while True:
 		    time.sleep(0.9)
 
 	except IOError:
-		sys.stdout.write("\r\n************ IOError\r\n")
-		time.sleep(1)
+		sys.stdout.write("\r\n************ I2C Error\r\n")
+		time.sleep(5)
 
 	except KeyboardInterrupt:
 		sys.stdout.write("\r\n")
