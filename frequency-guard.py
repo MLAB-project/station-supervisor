@@ -26,11 +26,11 @@ value = parser.parse_file(sys.argv[1])
 path = value['configurations'][0]['children'][0]['metadata_path']
 
 # required frequency
-carrier_freq = value['configurations'][0]['children'][0]['transmitter_carrier']	# Beacon frequency
+carrier_freq = value['configurations'][0]['children'][0]['transmitter_carrier']    # Beacon frequency
 low_detect_freq = value['configurations'][0]['children'][0]['children'][1]['low_detect_freq']
 hi_detect_freq = value['configurations'][0]['children'][0]['children'][1]['hi_detect_freq']
 
-echo_freq = (hi_detect_freq + low_detect_freq)/2	# hearing frequency
+echo_freq = (hi_detect_freq + low_detect_freq)/2    # hearing frequency
 req_freq = (carrier_freq - echo_freq) * 2
 
 # station name
@@ -42,68 +42,73 @@ print "RMDS Station Local Oscillator Tunning Utility \r\n"
 
 while True:
 
-	try:
+    try:
 
-		cfg = config.Config()
-		cfg.load_file(sys.argv[2])
+        cfg = config.Config()
+        cfg.load_file(sys.argv[2])
 
-		cfg.initialize()
+        cfg.initialize()
 
-		fcount = cfg.get_device("counter")
-		fgen = cfg.get_device("clkgen")
-		time.sleep(0.5)
-		fcount.route()
-		frequency = fcount.get_freq()
-		fgen.route()
-		rfreq = fgen.get_rfreq()
-		hsdiv = fgen.get_hs_div()
-		n1 = fgen.get_n1_div()
+        fcount = cfg.get_device("counter")
+        fgen = cfg.get_device("clkgen")
+        sht_sensor = cfg.get_device("sht25")
+        time.sleep(0.5)
+        fcount.route()
+        frequency = fcount.get_freq()
+        fgen.route()
+        rfreq = fgen.get_rfreq()
+        hsdiv = fgen.get_hs_div()
+        n1 = fgen.get_n1_div()
 
-		fcount.route()
-		fcount.set_GPS()	# set GPS configuration
-
-
-		#### Data measurement and logging ###################################################
+        fcount.route()
+        fcount.set_GPS()    # set GPS configuration
 
 
-		sys.stdout.write("\r\nCarrier Freq.: %3.6f MHz, Echo Freq.: %3.3f kHz, Req. Freq.: %3.6f MHz\r\n\n" % (carrier_freq/1e6, echo_freq/1e3, req_freq/1e6))
+        #### Data measurement and logging ###################################################
 
-		while True:
-		    now = datetime.datetime.now()
-		    filename = path + time.strftime("%Y%m%d%H", time.gmtime())+"0000_"+StationName+"_freq.csv"
-		    if not os.path.exists(filename):
-		        with open(filename, "a") as f:
-		            f.write('#timestamp,LO_Frequency \n')
 
-		    if (now.second == 15) or (now.second == 35) or (now.second == 55):
-		        fcount.route()
-		        frequency = fcount.get_freq()
-		        with open(filename, "a") as f:
-		            f.write("%.1f,%.1f\n" % (time.time(), frequency))
+        sys.stdout.write("\r\nCarrier Freq.: %3.6f MHz, Echo Freq.: %3.3f kHz, Req. Freq.: %3.6f MHz\r\n\n" % (carrier_freq/1e6, echo_freq/1e3, req_freq/1e6))
 
-		        fgen.route()
-		        regs = fgen.set_freq(frequency/1e6, float(req_freq/1e6))
-		        now = datetime.datetime.now()
+        while True:
+            now = datetime.datetime.now()
+            filename = path + time.strftime("%Y%m%d%H", time.gmtime())+"0000_"+StationName+"_freq.csv"
+            if not os.path.exists(filename):
+                with open(filename, "a") as f:
+                    f.write('#timestamp,LO_Frequency,Temp,Hum \n')
 
-		    fgen.route()
-		    rfreq = fgen.get_rfreq()
-		    hsdiv = fgen.get_hs_div()
-		    n1 = fgen.get_n1_div()
-		    fdco = (frequency/1e6) * hsdiv * n1
-		    fxtal = fdco / rfreq
+            if (now.second == 15) or (now.second == 35) or (now.second == 55):
+                fcount.route()
+                frequency = fcount.get_freq()
+                sht_sensor.route()
+                temperature = sht_sensor.get_temp()
+                humidity = sht_sensor.get_hum()
 
-		    sys.stdout.write("Current Freq.: %3.7f MHz, Req. Freq.: %3.6f MHz, Freq Error: %3.1f Hz, Time: %d s \r" % (frequency/1e6, req_freq/1e6, (frequency - req_freq), now.second ))
+                with open(filename, "a") as f:
+                    f.write("%.1f,%.1f,%.1f,%.1f \n" % (time.time(), frequency, temperature, humidity))
 
-		    sys.stdout.flush()
+                fgen.route()
+                regs = fgen.set_freq(frequency/1e6, float(req_freq/1e6))
+                now = datetime.datetime.now()
 
-		    time.sleep(0.9)
+            fgen.route()
+            rfreq = fgen.get_rfreq()
+            hsdiv = fgen.get_hs_div()
+            n1 = fgen.get_n1_div()
+            fdco = (frequency/1e6) * hsdiv * n1
+            fxtal = fdco / rfreq
 
-	except IOError:
-		sys.stdout.write("\r\n************ I2C Error\r\n")
-		time.sleep(5)
+            sys.stdout.write("Current Freq.: %3.7f MHz, Req. Freq.: %3.6f MHz, Freq Error: %3.1f Hz, Time: %d s \r" % (frequency/1e6, req_freq/1e6, (frequency - req_freq), now.second ))
 
-	except KeyboardInterrupt:
-		sys.stdout.write("\r\n")
-		sys.exit(0)
-	
+            sys.stdout.flush()
+
+            time.sleep(0.9)
+
+    except IOError:
+        sys.stdout.write("\r\n************ I2C Error\r\n")
+        time.sleep(5)
+
+    except KeyboardInterrupt:
+        sys.stdout.write("\r\n")
+        sys.exit(0)
+    
 
