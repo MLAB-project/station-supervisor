@@ -17,6 +17,8 @@ Station hardware supported in future
 Installation
 =======
 
+This scripts have to be copyed to ~/Bolidozor directory.
+Preferencis -> Default applications fo LXsession -> Autostart -> Add < x-terminal-emulator --geometry=100x20 -e /home/odroid/Bolidozor/station-supervisor/start.sh >
 
 Dependencies
 ===========
