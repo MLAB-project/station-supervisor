@@ -42,11 +42,11 @@ print "RMDS Station Local Oscillator Tunning Utility \r\n"
 
 while True:
 
+
+	cfg = config.Config()
+	cfg.load_file(sys.argv[2])
+
 	try:
-
-		cfg = config.Config()
-		cfg.load_file(sys.argv[2])
-
 		cfg.initialize()
 
 		fcount = cfg.get_device("counter")
