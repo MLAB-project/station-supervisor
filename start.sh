@@ -28,6 +28,7 @@ fi
 
 cd ~/repos/RMDS-data-uploader
 
+
 if ! pidof -x data_upload.py > /dev/null; then
 	./data_upload.py &
 fi

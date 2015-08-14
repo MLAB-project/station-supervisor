@@ -2,7 +2,6 @@
 
 for dev in $(ls /dev | grep '^mmcblk[0-9]$')
 do
-	# TODO
 	if [ $(mount | grep -c /dev/$dev ) == 0 ]
 	then
 		mount /dev/${dev}p1 /home/odroid/bolidozor
