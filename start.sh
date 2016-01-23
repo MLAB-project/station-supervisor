@@ -1,5 +1,6 @@
 #!/bin/sh
 
+sleep 10
 ntp-wait -v
 
 JSON_CONFIG="/home/odroid/bolidozor/station/Bolidozor.json"
