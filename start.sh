@@ -1,7 +1,6 @@
 #!/bin/sh
 
 ntp-wait -v
-sleep 5
 
 JSON_CONFIG="/home/odroid/bolidozor/station/Bolidozor.json"
 BUS_CONFIG="/home/odroid/bolidozor/station/bus_config.py"
@@ -31,7 +30,8 @@ fi
 
 cd ~/repos/RMDS-data-uploader
 
-if ! pidof -x run.py > /dev/null; then
-	./run.py &
+
+if ! pidof -x data_upload.py > /dev/null; then
+	./data_upload.py &
 fi
 
