@@ -82,8 +82,6 @@ while True:
                 time.sleep(0.002)  #After the signal IRQ goes high the external unit should wait 2ms before reading the interrupt register.
                 event_time = time.time()
 
-
-                interrupts = sensor.getInterrupts()
                 wdth = sensor.getWDTH()
                 tun_cap = sensor.getTUN_CAP()
         #        print("power: ", sensor.getPowerStatus())
@@ -93,6 +91,8 @@ while True:
                 energy = sensor.getSingleEnergy()
                 mask_dist = sensor.getMaskDist()
                 distance = sensor.getDistance()
+                interrupts = sensor.getInterrupts()
+
 
                 with open(filename, "a") as f:
                     f.write("{}, {}, {}, {}, {}, {}, {}, {}, {}, {} \n".format(event_time, interrupts, wdth, tun_cap, indoor, noise_floor, spike_rejection, energy, mask_dist, distance ))
@@ -109,6 +109,10 @@ while True:
                 print("Single Energy {}".format(energy))
                 print("Mask disturbance: {}".format(mask_dist))
                 print("Storm is {:02d} km away".format(distance))
+
+                while( not interrupt.read()):
+                   print("Interrupt signal is still low after readout..")
+                   interrupts = sensor.getInterrupts()
 
             else:
                 print("Lightning is not detected in the last {} minutes".format(lightning_timeout/60.0))
