@@ -29,10 +29,10 @@ if ! pidof radio-observer > /dev/null; then
 	~/repos/radio-observer/radio-observer -c ~/bolidozor/station/Bolidozor.json &
 fi
 
-cd ~/repos/RMDS-data-uploader
+cd ~/repos/data-uploader
 
 
-if ! pidof -x data_upload.py > /dev/null; then
-	./data_upload.py &
+if ! pidof -x dataUpload.py > /dev/null; then
+	./dataUpload.py $JSON_CONFIG &
 fi
 

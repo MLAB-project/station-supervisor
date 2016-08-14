@@ -3,4 +3,4 @@ killall servestream
 killall servecmd
 killall sdr-widget
 killall radio-observer
-killall data_upload.py
+killall dataUpload.py
