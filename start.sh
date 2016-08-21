@@ -24,8 +24,7 @@ fi
 
 cd ~/repos/RMDS-data-uploader
 
-
-if ! pidof -x data_upload.py > /dev/null; then
-	./data_upload.py ~/ionozor/station/Ionozor.json &
+if ! pidof -x dataUpload.py > /dev/null; then
+	./dataUpload.py ~/ionozor/station/Ionozor.json &
 fi
 
