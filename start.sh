@@ -23,7 +23,9 @@ if ! pidof sdr-widget > /dev/null; then
 	{ ./sdr-widget -r 96000 | buffer & } | ./servestream -d -p 3701
 fi
 
-./servecmd -d -p 3731 'nc localhost 3701 | buffer -s 64k -m 2m | ./x_fir_dec -b 128 96000 26500 48 3731_taps'
+if ! pidof ./servecmd > /dev/null; then
+    ./servecmd -d -p 3731 'nc localhost 3701 | buffer -s 64k -m 2m | ./x_fir_dec -b 128 96000 26500 48 3731_taps'
+fi
 
 if ! pidof radio-observer > /dev/null; then
 	~/repos/radio-observer/radio-observer -c ~/bolidozor/station/Bolidozor.json &
