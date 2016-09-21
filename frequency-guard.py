@@ -78,11 +78,11 @@ while True:
 		        with open(filename, "a") as f:
 		            f.write("%.1f,%.1f\n" % (time.time(), current_freq))
 
-		freq_error = current_freq - req_freq
+		        freq_error = current_freq - req_freq
 
-		if (freq_error > frequencies.std())                # set new parameters to oscilator only if the error is large or if we have enought statistics to madify the frequency
-		    fgen.route()
-		    regs = fgen.set_freq(frequencies.mean()/1e6, float(req_freq/1e6))
+		        if (freq_error > frequencies.std())                # set new parameters to oscilator only if the error is large or if we have enought statistics to madify the frequency
+		            fgen.route()
+		            regs = fgen.set_freq(frequencies.mean()/1e6, float(req_freq/1e6))
 
                 else:
                     frequencies = frequencies.append(current_freq)
