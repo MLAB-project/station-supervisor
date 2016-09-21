@@ -8,6 +8,7 @@ import sys
 from pymlab import config
 import os
 from mlabutils import ejson
+import numpy as np
 
 
 #import logging
@@ -53,14 +54,10 @@ while True:
 		fgen = cfg.get_device("clkgen")
 		time.sleep(0.5)
 		fcount.route()
-		frequency = fcount.get_freq()
-		fgen.route()
-		rfreq = fgen.get_rfreq()
-		hsdiv = fgen.get_hs_div()
-		n1 = fgen.get_n1_div()
-
+		current_freq = fcount.get_freq()
 		fcount.route()
 		fcount.set_GPS()	# set GPS configuration
+        frequencies = np.array([current_freq])
 
 
 		#### Data measurement and logging ###################################################
@@ -77,22 +74,23 @@ while True:
 
 		    if (now.second == 15) or (now.second == 35) or (now.second == 55):
 		        fcount.route()
-		        frequency = fcount.get_freq()
+		        current_freq = fcount.get_freq()
 		        with open(filename, "a") as f:
-		            f.write("%.1f,%.1f\n" % (time.time(), frequency))
+		            f.write("%.1f,%.1f\n" % (time.time(), current_freq))
 
-		        fgen.route()
-		        regs = fgen.set_freq(frequency/1e6, float(req_freq/1e6))
-		        now = datetime.datetime.now()
+                freq_error = current_freq - req_freq
 
-		    fgen.route()
-		    rfreq = fgen.get_rfreq()
-		    hsdiv = fgen.get_hs_div()
-		    n1 = fgen.get_n1_div()
-		    fdco = (frequency/1e6) * hsdiv * n1
-		    fxtal = fdco / rfreq
+                if (freq_error > frequencies.std())                # set new parameters to oscilator only if the error is large or if we have enought statistics to madify the frequency
+		            fgen.route()
+		            regs = fgen.set_freq(frequencies.mean()/1e6, float(req_freq/1e6))
 
-		    sys.stdout.write("Current Freq.: %3.7f MHz, Req. Freq.: %3.6f MHz, Freq Error: %3.1f Hz, Time: %d s \r" % (frequency/1e6, req_freq/1e6, (frequency - req_freq), now.second ))
+                else:
+                    frequencies = frequencies.append(current_freq)
+                    if (len(frequencies) > 10)
+                        frequencies = np.delete(frequencies, 0)
+                        print frequencies
+
+		    sys.stdout.write("Current Freq.: %3.7f MHz, Req. Freq.: %3.6f MHz, Freq Error: %3.1f Hz, Time: %d s \r" % (current_freq/1e6, req_freq/1e6, (current_freq - req_freq), now.second ))
 
 		    sys.stdout.flush()
 
