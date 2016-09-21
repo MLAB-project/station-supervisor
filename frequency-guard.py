@@ -80,13 +80,13 @@ while True:
 
 		        freq_error = current_freq - req_freq
 
-		        if (freq_error > frequencies.std())                # set new parameters to oscilator only if the error is large or if we have enought statistics to madify the frequency
-		            fgen.route()
-		            regs = fgen.set_freq(frequencies.mean()/1e6, float(req_freq/1e6))
+                if (freq_error > frequencies.std()):                # set new parameters to oscilator only if the error is large or if we have enought statistics to madify the frequency
+                    fgen.route()
+                    regs = fgen.set_freq(frequencies.mean()/1e6, float(req_freq/1e6))
 
                 else:
                     frequencies = frequencies.append(current_freq)
-                    if (len(frequencies) > 10)
+                    if (len(frequencies) > 10):
                         frequencies = np.delete(frequencies, 0)
                         print frequencies
 		
