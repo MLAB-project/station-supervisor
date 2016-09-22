@@ -82,14 +82,20 @@ while True:
 			    regs = fgen.set_freq(frequencies.mean()/1e6, float(req_freq/1e6))
 			    frequencies = np.append(frequencies, current_freq)
 			    freq_corr="Y"
-			elif (abs(freq_error) > (30*frequencies.std())):
+			elif (abs(freq_error) > (30*frequencies.std())) or (frequencies.std() > 1000):
 			    """ If frequency error is unrealistically big, we reset the GPS firstly before setting the new oscillator frequency"""
 			    fcount.route()
 			    fcount.set_GPS()	# set GPS configuration
+			    time.sleep(10)
+
+			    while not ((now.second == 15) or (now.second == 35) or (now.second == 55)):
+				pass
+
+			    current_freq = fcount.get_freq()
 			    fgen.route()
 			    regs = fgen.set_freq(current_freq/1e6, float(req_freq/1e6))
 			    frequencies = np.append(frequencies, current_freq)
-			    freq_corr="Y"                
+			    freq_corr="Y"
 			else:
 			    frequencies = np.append(frequencies, current_freq)
 			    if (len(frequencies) > 10):
