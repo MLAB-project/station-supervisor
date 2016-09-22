@@ -75,19 +75,22 @@ while True:
 		    if (now.second == 15) or (now.second == 35) or (now.second == 55):
 		        fcount.route()
 		        current_freq = fcount.get_freq()
-		        with open(filename, "a") as f:
-		            f.write("%.1f,%.1f\n" % (time.time(), current_freq))
-
 		        freq_error = current_freq - req_freq
 
-			if (freq_error > frequencies.std()):                # set new parameters to oscilator only if the error is large or if we have enought statistics to madify the frequency
+			if (abs(freq_error) > (3*frequencies.std())):                # set new parameters to oscilator only if the error is large or if we have enought statistics to madify the frequency
 			    fgen.route()
-			    regs = fgen.set_freq(frequencies.mean()/1e6, float(req_freq/1e6))
+			    regs = fgen.set_freq(current_freq/1e6, float(req_freq/1e6))
+			    frequencies = np.append(frequencies, current_freq)
+			    freq_corr="Y"
 			else:
 			    frequencies = np.append(frequencies, current_freq)
 			    if (len(frequencies) > 10):
 				frequencies = np.delete(frequencies, 0)
-				#print frequencies
+			    freq_corr="N"
+			
+		        with open(filename, "a") as f:
+		            f.write("%.1f,%.1f,%s\n" % (time.time(), current_freq, freq_corr))
+
 		
 		    sys.stdout.write("Current Freq.: %3.7f MHz, StdDev: %4.2f Hz , Req. Freq.: %3.6f MHz, Freq Error: %3.1f Hz, Time: %d s \r" % (current_freq/1e6, frequencies.std(), req_freq/1e6, (current_freq - req_freq), now.second ))
 		    sys.stdout.flush()
