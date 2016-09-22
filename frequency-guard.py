@@ -89,7 +89,7 @@ while True:
 				frequencies = np.delete(frequencies, 0)
 				#print frequencies
 		
-		    sys.stdout.write("Current Freq.: %3.7f MHz, Req. Freq.: %3.6f MHz, Freq Error: %3.1f Hz, Time: %d s \r" % (current_freq/1e6, req_freq/1e6, (current_freq - req_freq), now.second ))
+		    sys.stdout.write("Current Freq.: %3.7f MHz, StdDev: %4.2f Hz , Req. Freq.: %3.6f MHz, Freq Error: %3.1f Hz, Time: %d s \r" % (current_freq/1e6, frequencies.std(), req_freq/1e6, (current_freq - req_freq), now.second ))
 		    sys.stdout.flush()
 		    time.sleep(0.9)
 
