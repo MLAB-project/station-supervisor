@@ -22,7 +22,7 @@ if ! pidof radio-observer > /dev/null; then
 	~/repos/radio-observer/radio-observer -c ~/ionozor/station/Ionozor.json &
 fi
 
-cd ~/repos/RMDS-data-uploader
+cd ~/repos/data-uploader
 
 if ! pidof -x dataUpload.py > /dev/null; then
 	./dataUpload.py ~/ionozor/station/Ionozor.json &
