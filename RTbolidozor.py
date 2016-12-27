@@ -46,7 +46,7 @@ class mWS(websocket.WebSocket):
         self.send("$event;"+str(pipe)+";")
 
     def sendInfo(self, info = None):
-	self.send("$info;"+str(info)+";")
+    self.send("$info;"+str(info)+";")
 
 def main():
     arg = sys.argv
@@ -54,12 +54,12 @@ def main():
         print "Usage: dataUpload [radio-observer configFile]"
         sys.exit(1)
     else:
-    configFile = argv[1]
-    parser = ejson.Parser()
-    config = parser.parse_file(configFile)
-    observatory = self.value["configurations"][0]["children"][0]["origin"]
-    station = self.value["configurations"][0]["children"][0]["username"]
-    while 1:
+        configFile = argv[1]
+        parser = ejson.Parser()
+        config = parser.parse_file(configFile)
+        observatory = config["configurations"][0]["children"][0]["origin"]
+        station = config["configurations"][0]["children"][0]["username"]
+        while 1:
             try:
                 client = mWS()
                 client.connect("ws://rt.bolidozor.cz:5252/ws")
