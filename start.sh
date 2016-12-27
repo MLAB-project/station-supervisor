@@ -28,7 +28,7 @@ if ! pidof ./servecmd > /dev/null; then
 fi
 
 if ! pidof radio-observer > /dev/null; then
-	~/repos/radio-observer/radio-observer -c ~/bolidozor/station/Bolidozor.json &
+	~/repos/radio-observer/radio-observer -c $JSON_CONFIG | python ~/repos/station-supervisor/RTbolidozor.py $JSON_CONFIG&
 fi
 
 cd ~/repos/data-uploader
