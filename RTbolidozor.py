@@ -40,7 +40,7 @@ class mWS(websocket.WebSocket):
 
     def setStation(self, config):
         self.config=config
-        self.send("$stanica;"+str(self.config)+";")
+        self.send("$stanice;"+str(self.config)+";")
 
     def sendEvent(self, pipe = None):
         self.send("$event;"+str(pipe)+";")
@@ -62,7 +62,7 @@ def main():
         while 1:
             try:
                 client = mWS()
-                client.connect("ws://rt.bolidozor.cz:5252/ws")
+                client.connect("ws://rt.bolidozor.cz/ws")
                 client.setStation('{"name":"%s","ident":"%s"}' %(observatory, station))
                 client.sendEvent("start")
                 while 1:

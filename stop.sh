@@ -4,3 +4,4 @@ killall servecmd
 killall sdr-widget
 killall radio-observer
 killall dataUpload.py
+killall RTbolidozor.py

@@ -1,5 +1,6 @@
 #!/bin/sh
 
+killall RTbolidozor.py
 sleep 10
 ntp-wait -v
 
