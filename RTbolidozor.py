@@ -66,10 +66,12 @@ def main():
                 client.setStation('{"name":"%s","ident":"%s"}' %(observatory, station))
                 client.sendEvent("start")
                 while 1:
-                    print "-"
+                    print "New line received"
                     pipe = sys.stdin.readline()
                     if "met" in pipe:
                         client.sendEvent(pipe)
+                    else:
+                        time.sleep(0.5)
             except Exception, e:
                 print e
                 time.sleep(60)
