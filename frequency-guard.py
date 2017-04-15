@@ -8,6 +8,7 @@ import sys
 from pymlab import config
 import os
 from mlabutils import ejson
+import numpy as np
 
 
 #import logging
@@ -53,14 +54,10 @@ while True:
 		fgen = cfg.get_device("clkgen")
 		time.sleep(0.5)
 		fcount.route()
-		frequency = fcount.get_freq()
-		fgen.route()
-		rfreq = fgen.get_rfreq()
-		hsdiv = fgen.get_hs_div()
-		n1 = fgen.get_n1_div()
-
+		current_freq = fcount.get_freq()
 		fcount.route()
 		fcount.set_GPS()	# set GPS configuration
+		frequencies = np.array([current_freq])
 
 
 		#### Data measurement and logging ###################################################
@@ -73,29 +70,46 @@ while True:
 		    filename = path + time.strftime("%Y%m%d%H", time.gmtime())+"0000_"+StationName+"_freq.csv"
 		    if not os.path.exists(filename):
 		        with open(filename, "a") as f:
-		            f.write('#timestamp,LO_Frequency \n')
+		            f.write('#timestamp,LO_Frequency,Hit \n')
 
 		    if (now.second == 15) or (now.second == 35) or (now.second == 55):
 		        fcount.route()
-		        frequency = fcount.get_freq()
+		        current_freq = fcount.get_freq()
+		        freq_error = current_freq - req_freq
+
+			if (abs(freq_error) > 1e6):
+			    """ If frequency error is unrealistically big, we reset the GPS firstly before setting the new oscillator frequency"""
+			    fcount.route()
+			    fcount.set_GPS()	# set GPS configuration
+			    time.sleep(30)	# wait for relevant frequency measurement.
+
+			    while not ((now.second == 15) or (now.second == 35) or (now.second == 55)): # waiting for correct time for frequency readout.
+				pass
+
+			    current_freq = fcount.get_freq()
+			    fgen.route()
+			    regs = fgen.set_freq(current_freq/1e6, float(req_freq/1e6))
+			    frequencies = np.append(frequencies, current_freq)
+			    freq_corr="Y"
+
+			elif (abs(freq_error) > (3*frequencies.std())):                # set new parameters to oscilator only if the error is significant.
+			    fgen.route()
+			    regs = fgen.set_freq(frequencies.mean()/1e6, float(req_freq/1e6))
+			    frequencies = np.append(frequencies, current_freq)
+			    freq_corr="Y"
+
+			else:
+			    frequencies = np.append(frequencies, current_freq)
+			    if (len(frequencies) > 10):
+				frequencies = np.delete(frequencies, 0)
+			    freq_corr="N"
+			
 		        with open(filename, "a") as f:
-		            f.write("%.1f,%.1f\n" % (time.time(), frequency))
+		            f.write("%.1f,%.1f,%s\n" % (time.time(), current_freq, freq_corr))
 
-		        fgen.route()
-		        regs = fgen.set_freq(frequency/1e6, float(req_freq/1e6))
-		        now = datetime.datetime.now()
-
-		    fgen.route()
-		    rfreq = fgen.get_rfreq()
-		    hsdiv = fgen.get_hs_div()
-		    n1 = fgen.get_n1_div()
-		    fdco = (frequency/1e6) * hsdiv * n1
-		    fxtal = fdco / rfreq
-
-		    sys.stdout.write("Current Freq.: %3.7f MHz, Req. Freq.: %3.6f MHz, Freq Error: %3.1f Hz, Time: %d s \r" % (frequency/1e6, req_freq/1e6, (frequency - req_freq), now.second ))
-
+		
+		    sys.stdout.write("Current Freq.: %3.7f MHz, StdDev: %4.2f Hz , Req. Freq.: %3.6f MHz, Freq Error: %3.1f Hz, Time: %d s \r" % (current_freq/1e6, frequencies.std(), req_freq/1e6, (current_freq - req_freq), now.second ))
 		    sys.stdout.flush()
-
 		    time.sleep(0.9)
 
 	except IOError:
