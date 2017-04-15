@@ -57,13 +57,13 @@ def main():
         configFile = arg[1]
         parser = ejson.Parser()
         config = parser.parse_file(configFile)
-        observatory = config["configurations"][0]["children"][0]["origin"]
-        station = config["configurations"][0]["children"][0]["username"]
+        station = config["configurations"][0]["children"][0]["origin"]
+        observatory = config["storage_username"]
         while 1:
             try:
                 client = mWS()
                 client.connect("ws://rt.bolidozor.cz/ws")
-                client.setStation('{"name":"%s","ident":"%s"}' %(observatory, station))
+                client.setStation('{"name":"%s","ident":"%s"}' %(station, observatory))
                 client.sendEvent("start")
                 while 1:
                     print "New line received"
