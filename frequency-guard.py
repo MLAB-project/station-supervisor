@@ -43,72 +43,83 @@ print "RMDS Station Local Oscillator Tunning Utility \r\n"
 while True:
 
     try:
+	cfg = config.Config()
+	cfg.load_file(sys.argv[2])
 
-        cfg = config.Config()
-        cfg.load_file(sys.argv[2])
+	try:
+		cfg.initialize()
 
-        cfg.initialize()
-
-        fcount = cfg.get_device("counter")
-        fgen = cfg.get_device("clkgen")
-        sht_sensor = cfg.get_device("sht25")
-        time.sleep(0.5)
-        fcount.route()
-        frequency = fcount.get_freq()
-        fgen.route()
-        rfreq = fgen.get_rfreq()
-        hsdiv = fgen.get_hs_div()
-        n1 = fgen.get_n1_div()
-
-        fcount.route()
-        fcount.set_GPS()    # set GPS configuration
+		fcount = cfg.get_device("counter")
+		fgen = cfg.get_device("clkgen")
+		sht_sensor = cfg.get_device("sht25")
+		time.sleep(0.5)
+		fcount.route()
+		current_freq = fcount.get_freq()
+		fcount.route()
+		fcount.set_GPS()	# set GPS configuration
+		frequencies = np.array([current_freq])
 
 
-        #### Data measurement and logging ###################################################
+		#### Data measurement and logging ###################################################
 
 
-        sys.stdout.write("\r\nCarrier Freq.: %3.6f MHz, Echo Freq.: %3.3f kHz, Req. Freq.: %3.6f MHz\r\n\n" % (carrier_freq/1e6, echo_freq/1e3, req_freq/1e6))
+		sys.stdout.write("\r\nCarrier Freq.: %3.6f MHz, Echo Freq.: %3.3f kHz, Req. Freq.: %3.6f MHz\r\n\n" % (carrier_freq/1e6, echo_freq/1e3, req_freq/1e6))
 
-        while True:
-            now = datetime.datetime.now()
-            filename = path + time.strftime("%Y%m%d%H", time.gmtime())+"0000_"+StationName+"_freq.csv"
-            if not os.path.exists(filename):
-                with open(filename, "a") as f:
-                    f.write('#timestamp,LO_Frequency,Temp,Hum \n')
+		while True:
+		    now = datetime.datetime.now()
+		    filename = path + time.strftime("%Y%m%d%H", time.gmtime())+"0000_"+StationName+"_freq.csv"
+		    if not os.path.exists(filename):
+		        with open(filename, "a") as f:
+		            f.write('#timestamp,LO_Frequency,Hit,Temp,Hum \n')
 
-            if (now.second == 15) or (now.second == 35) or (now.second == 55):
-                fcount.route()
-                frequency = fcount.get_freq()
-                sht_sensor.route()
-                temperature = sht_sensor.get_temp()
-                humidity = sht_sensor.get_hum()
+		    if (now.second == 15) or (now.second == 35) or (now.second == 55):
+		        fcount.route()
+		        current_freq = fcount.get_freq()
+		        freq_error = current_freq - req_freq
+			sht_sensor.route()
+			humidity =  0  #sht_sensor.get_hum()
+			temperature = 0 #sht_sensor.get_temp()
 
-                with open(filename, "a") as f:
-                    f.write("%.1f,%.1f,%.1f,%.1f \n" % (time.time(), frequency, temperature, humidity))
+			if (abs(freq_error) > 1e6):
+			    """ If frequency error is unrealistically big, we reset the GPS firstly before setting the new oscillator frequency"""
+			    fcount.route()
+			    fcount.set_GPS()	# set GPS configuration
+			    time.sleep(30)	# wait for relevant frequency measurement.
 
-                fgen.route()
-                regs = fgen.set_freq(frequency/1e6, float(req_freq/1e6))
-                now = datetime.datetime.now()
+			    while not ((now.second == 15) or (now.second == 35) or (now.second == 55)): # waiting for correct time for frequency readout.
+				pass
 
-            fgen.route()
-            rfreq = fgen.get_rfreq()
-            hsdiv = fgen.get_hs_div()
-            n1 = fgen.get_n1_div()
-            fdco = (frequency/1e6) * hsdiv * n1
-            fxtal = fdco / rfreq
+			    current_freq = fcount.get_freq()
+			    fgen.route()
+			    regs = fgen.set_freq(current_freq/1e6, float(req_freq/1e6))
+			    frequencies = np.append(frequencies, current_freq)
+			    freq_corr="Y"
 
-            sys.stdout.write("Current Freq.: %3.7f MHz, Req. Freq.: %3.6f MHz, Freq Error: %3.1f Hz, Time: %d s \r" % (frequency/1e6, req_freq/1e6, (frequency - req_freq), now.second ))
+			elif (abs(freq_error) > (3*frequencies.std())):                # set new parameters to oscilator only if the error is significant.
+			    fgen.route()
+			    regs = fgen.set_freq(frequencies.mean()/1e6, float(req_freq/1e6))
+			    frequencies = np.append(frequencies, current_freq)
+			    freq_corr="Y"
 
-            sys.stdout.flush()
+			else:
+			    frequencies = np.append(frequencies, current_freq)
+			    if (len(frequencies) > 10):
+				frequencies = np.delete(frequencies, 0)
+			    freq_corr="N"
+			
+		        with open(filename, "a") as f:
+		            f.write("%.1f,%.1f,%s,%.1f,%.1f\n" % (time.time(), current_freq, freq_corr, temperature, humidity))
 
-            time.sleep(0.9)
+		
+		    sys.stdout.write("Current Freq.: %3.7f MHz, StdDev: %4.2f Hz , Req. Freq.: %3.6f MHz, Freq Error: %3.1f Hz, Time: %d s \r" % (current_freq/1e6, frequencies.std(), req_freq/1e6, (current_freq - req_freq), now.second ))
+		    sys.stdout.flush()
+		    time.sleep(0.9)
 
-    except IOError:
-        sys.stdout.write("\r\n************ I2C Error\r\n")
-        time.sleep(5)
+	except IOError:
+		sys.stdout.write("\r\n************ I2C Error\r\n")
+		time.sleep(5)
 
-    except KeyboardInterrupt:
-        sys.stdout.write("\r\n")
-        sys.exit(0)
-    
-
+	except KeyboardInterrupt:
+		sys.stdout.write("\r\n")
+		sys.exit(0)
+	
