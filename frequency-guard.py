@@ -89,18 +89,25 @@ while True:
 			    current_freq = fcount.get_freq()
 			    fgen.route()
 			    regs = fgen.set_freq(current_freq/1e6, float(req_freq/1e6))
-			    frequencies = np.append(frequencies, current_freq)
-			    freq_corr="Y"
+                frequencies = np.empty([1])
+                frequencies[:] = np.NAN
+                freq_corr="E"
 
-			elif (abs(freq_error) > (3*frequencies.std())):                # set new parameters to oscilator only if the error is significant.
-			    fgen.route()
-			    regs = fgen.set_freq(frequencies.mean()/1e6, float(req_freq/1e6))
-			    frequencies = np.append(frequencies, current_freq)
-			    freq_corr="Y"
+			elif (abs(freq_error) > (3*np.nanstd(frequencies))):                # set new parameters to oscilator only if the error is significant.
+                if (len(frequencies) > 3):
+                    fgen.route()
+                    mean_frequency = np.nanmean(frequencies)
+                    regs = fgen.set_freq(mean_frequency/1e6, float(req_freq/1e6))
+                    frequencies = np.array([mean_frequency])
+                    freq_corr="Y"
+                    continue
+
+                freq_corr="P"
+                frequencies = np.append(frequencies, current_freq)
 
 			else:
 			    frequencies = np.append(frequencies, current_freq)
-			    if (len(frequencies) > 10):
+			    if (len(frequencies) > 30):
 				frequencies = np.delete(frequencies, 0)
 			    freq_corr="N"
 			
