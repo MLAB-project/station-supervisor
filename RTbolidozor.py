@@ -42,8 +42,8 @@ class mWS(websocket.WebSocket):
         self.config=config
         self.send("$stanice;"+str(self.config)+";")
 
-    def sendEvent(self, pipe = None):
-        self.send("$event;"+str(pipe)+";")
+    def sendEvent(self, pipe = None, station = "null"):
+        self.send("$event;"+station+";"+str(pipe)+";")
 
     def sendInfo(self, info = None):
         self.send("$info;"+str(info)+";")
@@ -62,14 +62,15 @@ def main():
         while 1:
             try:
                 client = mWS()
-                client.connect("ws://rt.bolidozor.cz/ws")
+                client.connect("ws://rtbolidozor.astro.cz/ws")
                 client.setStation('{"name":"%s","ident":"%s"}' %(station, observatory))
-                client.sendEvent("start")
+                client.sendEvent("start", station)
                 while 1:
-                    print "New line received"
+                    #print "New line received"
                     pipe = sys.stdin.readline()
                     if "met" in pipe:
-                        client.sendEvent(pipe)
+                        print "Meteor from radio-observer pipe:", pipe+";"+station
+                        client.sendEvent(pipe, station)
                     else:
                         time.sleep(0.5)
             except Exception, e:
