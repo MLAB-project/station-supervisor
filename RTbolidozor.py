@@ -7,9 +7,8 @@
 
 import sys
 import time
-import datetime
-import websocket
-import binascii
+import urllib2
+import requests
 from mlabutils import ejson
 
 
@@ -17,36 +16,6 @@ exitapp = False
 met = False
 metData = u""
 midiTime = 0
-
-class mWS(websocket.WebSocket):
-    def on_connect(self):
-        print "connected"
-        self.connected=True
-
-    def on_open(self):
-        self.send("ahoj")
-
-    def on_message(self, data):
-        print data
-
-    def on_ping(self):
-        print 'I was pinged'
-
-    def on_pong(self):
-        print 'I was ponged'
-
-    def on_close(self):
-        print 'Socket closed.'
-
-    def setStation(self, config):
-        self.config=config
-        self.send("$stanice;"+str(self.config)+";")
-
-    def sendEvent(self, pipe = None, station = "null"):
-        self.send("$event;"+station+";"+str(pipe)+";")
-
-    def sendInfo(self, info = None):
-        self.send("$info;"+str(info)+";")
 
 def main():
     arg = sys.argv
@@ -59,23 +28,21 @@ def main():
         config = parser.parse_file(configFile)
         station = config["configurations"][0]["children"][0]["origin"]
         observatory = config["storage_username"]
-        while 1:
+        print station
+        print observatory
+        while True:
             try:
-                client = mWS()
-                client.connect("ws://rtbolidozor.astro.cz/ws")
-                client.setStation('{"name":"%s","ident":"%s"}' %(station, observatory))
-                client.sendEvent("start", station)
-                while 1:
-                    #print "New line received"
-                    pipe = sys.stdin.readline()
-                    if "met" in pipe:
-                        print "Meteor from radio-observer pipe:", pipe+";"+station
-                        client.sendEvent(pipe, station)
-                    else:
-                        time.sleep(0.5)
+                pipe = sys.stdin.readline()
+                if "met" in pipe:
+                    print "Meteor from radio-observer pipe:", pipe
+                    payload = {'station': station, 'observatory': observatory}
+                    print payload
+                    r = requests.get('http://rtbolidozor.astro.cz/event', params=payload, timeout=1)
+                else:
+                    time.sleep(0.5)
             except Exception, e:
                 print e
-                time.sleep(60)
+                time.sleep(1)
 
 if __name__ == "__main__":
     try:
@@ -83,4 +50,3 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         exitapp = True
         raise 0
-
