@@ -28,6 +28,11 @@ def main():
         config = parser.parse_file(configFile)
         station = config["configurations"][0]["children"][0]["origin"]
         observatory = config["storage_username"]
+
+        payload = {'station': station, 'observatory': observatory, 'msg': 'Hello!'}
+        print payload
+        r = requests.get('http://rtbolidozor.astro.cz/event', params=payload, timeout=1)
+
         print station
         print observatory
         while True:
@@ -35,7 +40,7 @@ def main():
                 pipe = sys.stdin.readline()
                 if "met" in pipe:
                     print "Meteor from radio-observer pipe:", pipe
-                    payload = {'station': station, 'observatory': observatory}
+                    payload = {'station': station, 'observatory': observatory, 'msg': ''}
                     print payload
                     r = requests.get('http://rtbolidozor.astro.cz/event', params=payload, timeout=1)
                 else:
