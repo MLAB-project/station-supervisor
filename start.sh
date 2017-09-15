@@ -1,15 +1,19 @@
 #!/bin/sh
+#set -o xtrace
 
-killall RTbolidozor.py
+killall RTbolidozor.py > /dev/null
+
 sleep 10
 ntp-wait -v
 
-JSON_CONFIG="/home/odroid/bolidozor/station/Bolidozor.json"
-BUS_CONFIG="/home/odroid/bolidozor/station/bus_config.py"
+JSON_CONFIG="/home/bolidozor/bolidozor/station/Bolidozor.json"
+BUS_CONFIG="/home/bolidozor/bolidozor/station/bus_config.py"
 
 ulimit -c unlimited
 
 cd ~/repos/station-supervisor
+
+#./mount-sd-card.sh
 
 if ! pidof -x frequency-guard.py > /dev/null; then
 	./frequency-guard.py $JSON_CONFIG $BUS_CONFIG > /dev/null &
@@ -29,7 +33,7 @@ if ! pidof ./servecmd > /dev/null; then
 fi
 
 if ! pidof radio-observer > /dev/null; then
-	~/repos/radio-observer/radio-observer -c $JSON_CONFIG | python ~/repos/station-supervisor/RTbolidozor.py $JSON_CONFIG&
+	~/repos/radio-observer/radio-observer -c $JSON_CONFIG | python3 ~/repos/station-supervisor/RTbolidozor.py $JSON_CONFIG&
 fi
 
 cd ~/repos/data-uploader
