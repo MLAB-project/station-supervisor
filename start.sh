@@ -14,9 +14,13 @@ if ! pidof -x ISMS_read.py > /dev/null; then
     ./ISMS_read.py 1 $JSON_CONFIG > /dev/null &
 fi
 
+if ! pidof -x average.py > /dev/null; then
+    ./average.py $JSON_CONFIG > /dev/null &
+fi
+
 cd ~/repos/data-uploader
 
-if ! pidof -x dataUpload.py > /dev/null; then
-	./dataUpload.py $JSON_CONFIG > /dev/null &
-fi
+#if ! pidof -x dataUpload.py > /dev/null; then
+#	./dataUpload.py $JSON_CONFIG > /dev/null &
+#fi
 
