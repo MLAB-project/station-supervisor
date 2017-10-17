@@ -20,7 +20,7 @@ fi
 
 cd ~/repos/data-uploader
 
-#if ! pidof -x dataUpload.py > /dev/null; then
-#	./dataUpload.py $JSON_CONFIG > /dev/null &
-#fi
+if ! pidof -x dataUpload.py > /dev/null; then
+	./dataUpload.py $JSON_CONFIG > /dev/null &
+fi
 
