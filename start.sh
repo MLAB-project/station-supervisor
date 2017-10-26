@@ -18,8 +18,6 @@ if ! pidof -x average.py > /dev/null; then
     ./average.py $JSON_CONFIG > /dev/null &
 fi
 
-cd ~/repos/ISMS01A/SW/button
-
 if ! pidof -x button_monitor.py  > /dev/null; then
     ./button_monitor.py  $JSON_CONFIG > /dev/null &
 fi
