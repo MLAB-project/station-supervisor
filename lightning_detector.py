@@ -60,7 +60,7 @@ time.sleep(0.5)
 
 # Open GPIO 960 as interrupt input from LIGHTNING01A sensor.
 interrupt = GPIO(960, "in")
-interrupt.edge("rising")
+interrupt.edge = "rising"
 
 
 #### Data Logging ###################################################
