@@ -68,7 +68,7 @@ interrupt.edge = "rising"
 try:
     while True:
 
-        if interrupt.pool():
+        if interrupt.poll():
 
             print("sINTer:", interrupts, datetime.datetime.now().isoformat(' '))
             print("WDTH:",sensor.getWDTH())
