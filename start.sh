@@ -13,7 +13,7 @@ BUS_CONFIG="/home/odroid/bolidozor/station/bus_config.py"
 ulimit -c unlimited
 
 if ! pidof -x lightning_example.py > /dev/null; then
-	python ~/repos/examples/lightning_example.py 0 > ~/lightning_log &
+	python ~/repos/pymlab/examples/lightning_example.py 0 > ~/lightning_log &
 fi
 
 cd ~/drivers
