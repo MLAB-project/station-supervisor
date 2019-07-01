@@ -8,6 +8,8 @@ import datetime
 import sys
 from pymlab import config
 
+from periphery import GPIO
+
 #### Script Arguments ###############################################
 
 if len(sys.argv) != 2:
@@ -56,14 +58,17 @@ sensor.setMaskDist(True)
 time.sleep(0.5)
 
 
-i=0
+# Open GPIO 960 as interrupt input from LIGHTNING01A sensor.
+interrupt = GPIO(960, "in")
+interrupt.edge("rising")
+
 
 #### Data Logging ###################################################
 
 try:
     while True:
-        interrupts = sensor.getInterrupts()
-        if any(value == True for value in interrupts.values()):
+
+        if interrupt.pool():
 
             print("sINTer:", interrupts, datetime.datetime.now().isoformat(' '))
             print("WDTH:",sensor.getWDTH())
@@ -76,12 +81,9 @@ try:
             print("Mask disturbance:", sensor.getMaskDist())
             print("Storm is {:02d} km away".format(sensor.getDistance()))
 
-            time.sleep(0.5)
-
-            i += 1
-
         else:
-            time.sleep(5)
+            time.sleep(1)
 
 except KeyboardInterrupt:
+    interrupt.close()
     sys.exit(0)
