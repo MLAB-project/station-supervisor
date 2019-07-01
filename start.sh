@@ -20,6 +20,6 @@ cd ~/drivers
 
 
 if ! pidof -x trigger > /dev/null; then
-	./trigger -pre 213 -post 10 -recdir /data > /dev/null &
+	./trigger -pre 213 -post 10 -nofir -recdir /data > /dev/null &
 fi
 
