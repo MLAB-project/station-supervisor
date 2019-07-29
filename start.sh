@@ -12,14 +12,14 @@ BUS_CONFIG="/home/odroid/bolidozor/station/bus_config.py"
 
 ulimit -c unlimited
 
-if ! pidof -x lightning_example.py > /dev/null; then
-	python ~/repos/pymlab/examples/lightning_example.py 0 > ~/lightning_log &
-fi
+#if ! pidof -x lightning_example.py > /dev/null; then
+#	python ~/repos/pymlab/examples/lightning_example.py 0 > ~/lightning_log &
+#fi
 
 cd ~/drivers
 
 
 if ! pidof -x trigger > /dev/null; then
-	./trigger -pre 213 -post 10 -nofir -recdir /data > /dev/null &
+	./trigger -pre 110 -post 113 -nofir -recdir /data > /dev/null &
 fi
 
