@@ -36,7 +36,10 @@ def readout():
 
 def main():
 	print "resetting"
-	reg_write(0x0, 0x1)
+	reg_write(0x0, 0x1)     # device reset
+
+	reg_write(0x07, 0x0408) # LOW pass filter 7.5 MHz, Low noise mode
+
 
 	if len(sys.argv) < 2:
 		readout()
