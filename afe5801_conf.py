@@ -31,7 +31,7 @@ def reg_read(addr):
 	return ret[0] << 8 | ret[1]
 
 def readout():
-	for a in range(1, 7):
+	for a in range(1, 8):
 		print "\treg[%d] = 0x%x" % (a, reg_read(a))
 
 def main():
