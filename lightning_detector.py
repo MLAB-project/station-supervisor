@@ -13,27 +13,15 @@ from periphery import GPIO
 #### Script Arguments ###############################################
 
 if len(sys.argv) != 2:
-    sys.stderr.write("Invalid number of arguments.\n")
-    sys.stderr.write("Usage: %s PORT ADDRESS\n" % (sys.argv[0], ))
+    sys.stderr.write("Invalid number of arguments. Missing path to a config files!\n")
+    sys.stderr.write("Usage: %s i2c_bus.py\n" % (sys.argv[0], ))
     sys.exit(1)
-
-port = eval(sys.argv[1])
 
 #### Sensor Configuration ###########################################
 
-cfg = config.Config(
-	i2c = {"port": 0},
-        bus = [
-            {
-                "type": "i2chub",
-                "address": 0x73,
-                "children": [
-                    {"name": "i2cspi", "type": "i2cspi" , "channel": 0, "address": 44 },
-                    {"name": "lighting", "type": "LIGHTNING01A", "TUN_CAP": 6, "channel": 5, },
-                ],
-            },
-        ],
-)
+
+cfg = config.Config()
+cfg.load_file(sys.argv[1])
 
 sensor = cfg.get_device("lighting")
 
