@@ -1,17 +1,17 @@
+#!/bin/sh
+
+./afe5801_conf.py
+echo 960 > /sys/class/gpio/export
+mount /dev/mmcblk0p3 /data
+
 sleep 10
+ntp-wait -v
+
+JSON_CONFIG="/home/odroid/bolidozor/station/Bolidozor.json"
+BUS_CONFIG="/home/odroid/bolidozor/station/bus_config.py"
+
 ulimit -c unlimited
-qjackctl&
-~/git/pysdr/pysdr-waterfall  -b 16384&
-sleep 5
-jack_connect system:capture_1 pysdr:input_i
-jack_connect system:capture_2 pysdr:input_q
-~/git/pysdr/whistle/whistle -p freqx,-26300:kbfir,63,70,400,200:freqx,500:amplify,10&
-sleep 3
-jack_connect system:capture_1 whistle:input_i
-jack_connect system:capture_2 whistle:input_q
-jack_connect radio-observer:midi_out pysdr:input_events
-alsa_out -d hw:0&
-sleep 2
-jack_connect whistle:output_i alsa_out:playback_1
-jack_connect whistle:output_q alsa_out:playback_2
-xgps&
+
+cd
+
+repos/signal-piping-tools/servecmd -w -p 4000 'drivers/dma_test -f -'
