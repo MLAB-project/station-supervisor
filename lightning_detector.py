@@ -53,6 +53,7 @@ try:
     while True:
 
         if interrupt.poll(-1):
+            time.sleep(0.002)  #After the signal IRQ goes high the external unit should wait 2ms before reading the interrupt register.
 
             print("sINTer:", sensor.getInterrupts(), datetime.datetime.now().isoformat(' '))
             print("WDTH:",sensor.getWDTH())
