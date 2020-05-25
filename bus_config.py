@@ -7,7 +7,7 @@ bus = [{
         "address": 0x73,
         "children": [
                     {"name": "i2cspi", "type": "i2cspi" , "channel": 0, "address": 44 },
-                    {"name": "lighting", "type": "LIGHTNING01A", "TUN_CAP": 6, "channel": 6, },
+                    {"name": "lighting", "type": "LIGHTNING01A", "TUN_CAP": 0, "address": 0x02, "channel": 6, },
                 ],
     }]
 
