@@ -60,9 +60,9 @@ while True:
 
         print("Configuring sensor registers")
         sensor.setWDTH(1)
-        sensor.setNoiseFloor(5)
+        sensor.setNoiseFloor(3)
         sensor.setIndoor(True)
-        sensor.setSpikeRejection(2)
+        sensor.setSpikeRejection(0)
         sensor.setMaskDist(False)
 
         time.sleep(0.5)
@@ -72,7 +72,7 @@ while True:
         interrupt = GPIO(960, "in")
         interrupt.edge = "rising"
 
-        lightning_timeout = 600
+        lightning_timeout = 60
 
         #### Data Logging ###################################################
 
