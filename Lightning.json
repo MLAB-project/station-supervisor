@@ -1,0 +1,18 @@
+{
+	"logging": [
+		{
+			"file_name": "/data/lightning-detector.log",
+			"log_level": "debug",
+		},
+	],
+
+	"project": "CRREAT",
+	"metadata_path": "/data/",
+	"storage_hostname": "kapybara.ujf.cas.cz",
+	"storage_username": "kaklik",
+	"storage_stationpath": "/storage/experiments/",
+  "HWversion": "RSMS01A",
+	"origin": "CAR-B0",      // name of detection station
+	"receiver_carrier": 143050000,
+	"configuration": "default",         // name of configuration which will be selected from following list
+}
