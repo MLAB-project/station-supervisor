@@ -67,8 +67,8 @@ while True:
         print("Configuring sensor registers")
         sensor.setWDTH(1)
         sensor.setNoiseFloor(3)
-        sensor.setIndoor(True)
-        sensor.setSpikeRejection(0)
+        sensor.setIndoor(False)
+        sensor.setSpikeRejection(1)
         sensor.setMaskDist(False)
 
         time.sleep(0.5)
@@ -80,19 +80,18 @@ while True:
             print("Waiting for lightning interrupt.. ")
 
             if interrupt.read() or interrupt.poll(lightning_timeout):  #wait to interrupt from sensor or fail to timeout
-                time.sleep(0.002)  #After the signal IRQ goes high the external unit should wait 2ms before reading the interrupt register.
+                time.sleep(0.02)  #After the signal IRQ goes high the external unit should wait 2ms before reading the interrupt register.
                 event_time = time.time()
-
+                distance = sensor.getDistance()
+                energy = sensor.getSingleEnergy()
+                interrupts = sensor.getInterrupts()
                 wdth = sensor.getWDTH()
                 tun_cap = sensor.getTUN_CAP()
         #        print("power: ", sensor.getPowerStatus())
                 indoor = sensor.getIndoor()
                 noise_floor = sensor.getNoiseFloor()
                 spike_rejection = sensor.getSpikeRejection()
-                energy = sensor.getSingleEnergy()
                 mask_dist = sensor.getMaskDist()
-                distance = sensor.getDistance()
-                interrupts = sensor.getInterrupts()
 
 
                 with open(filename, "a") as f:
