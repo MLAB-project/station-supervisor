@@ -50,6 +50,12 @@ while True:
         sensor = cfg.get_device("lighting")
         sensor.route()
 
+        # Open GPIO 960 as interrupt input from LIGHTNING01A sensor.
+        interrupt = GPIO(960, "in")
+        interrupt.edge = "rising"
+
+        lightning_timeout = 60
+
         time.sleep(0.5)
         sensor.reset()
 
@@ -67,18 +73,13 @@ while True:
 
         time.sleep(0.5)
 
-
-        # Open GPIO 960 as interrupt input from LIGHTNING01A sensor.
-        interrupt = GPIO(960, "in")
-        interrupt.edge = "rising"
-
-        lightning_timeout = 60
-
         #### Data Logging ###################################################
 
         while True:
 
-            if interrupt.poll(lightning_timeout):  #wait to interrupt from sensor or fail to timeout
+            print("Waiting for lightning interrupt.. ")
+
+            if interrupt.read() or interrupt.poll(lightning_timeout):  #wait to interrupt from sensor or fail to timeout
                 time.sleep(0.002)  #After the signal IRQ goes high the external unit should wait 2ms before reading the interrupt register.
                 event_time = time.time()
 
@@ -110,12 +111,13 @@ while True:
                 print("Mask disturbance: {}".format(mask_dist))
                 print("Storm is {:02d} km away".format(distance))
 
-                while( not interrupt.read()):
-                   print("Interrupt signal is still low after readout..")
+                while(interrupt.read()):
+                   print("Interrupt signal is still True after readout..")
                    interrupts = sensor.getInterrupts()
 
             else:
                 print("Lightning is not detected in the last {} minutes".format(lightning_timeout/60.0))
+                print("Interrupt signal line is in {}".format(interrupt.read()))
 
     except IOError:
 		sys.stdout.write("\r\n************ I2C Error\r\n")
