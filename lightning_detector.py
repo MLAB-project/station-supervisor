@@ -65,10 +65,10 @@ while True:
         sensor.calib_rco()
 
         print("Configuring sensor registers")
-        sensor.setWDTH(1)
-        sensor.setNoiseFloor(3)
+        sensor.setWDTH(0)
+        sensor.setNoiseFloor(4)
         sensor.setIndoor(False)
-        sensor.setSpikeRejection(1)
+        sensor.setSpikeRejection(0)
         sensor.setMaskDist(False)
 
         time.sleep(0.5)
@@ -89,7 +89,7 @@ while True:
                 tun_cap = sensor.getTUN_CAP()
         #        print("power: ", sensor.getPowerStatus())
                 indoor = sensor.getIndoor()
-                noise_floor = sensor.getNoiseFloor()
+                noise_floor = 0 # sensor.getNoiseFloor()
                 spike_rejection = sensor.getSpikeRejection()
                 mask_dist = sensor.getMaskDist()
 
