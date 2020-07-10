@@ -10,7 +10,7 @@ cfg = config.Config(
                 "type": "i2chub",
                 "address": 0x73,
                 "children": [
-                    {"name": "i2cspi", "type": "i2cspi" , "channel": 0, "address": 44 },   
+                    {"name": "i2cspi", "type": "i2cspi" , "channel": 0, "address": 44 },
                 ],
             },
         ],
@@ -38,7 +38,12 @@ def main():
 	print "resetting"
 	reg_write(0x0, 0x1)     # device reset
 
-	reg_write(0x07, 0x0408) # LOW pass filter 7.5 MHz, Low noise mode
+	reg_write(0x07, 0x0408) # LOW pass filter 7.5 MHz, Low noise mode. AC coupled
+
+	reg_write(0x0, 0b100)     # Access to TGC registers
+
+	reg_write(0x99, 0b1000)     # Enable STATIC_PGA with zero fine gain
+	reg_write(0x9A, 0x12)     # coarse gain of +13dB. 
 
 
 	if len(sys.argv) < 2:
@@ -58,4 +63,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
