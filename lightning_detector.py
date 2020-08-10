@@ -65,9 +65,9 @@ while True:
         sensor.calib_rco()
 
         print("Configuring sensor registers")
-        sensor.setWDTH(0)
-        sensor.setNoiseFloor(4)
-        sensor.setIndoor(False)
+        sensor.setWDTH(1)
+        sensor.setNoiseFloor(6)
+        sensor.setIndoor(True)
         sensor.setSpikeRejection(0)
         sensor.setMaskDist(False)
 
