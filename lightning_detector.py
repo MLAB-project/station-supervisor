@@ -112,6 +112,7 @@ while True:
 
                 while(interrupt.read()):
                    print("Interrupt signal is still True after readout..")
+                   time.sleep(1)
                    interrupts = sensor.getInterrupts()
 
             else:
