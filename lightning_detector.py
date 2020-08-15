@@ -112,8 +112,9 @@ while True:
 
                 while(interrupt.read()):
                    print("Interrupt signal is still True after readout..")
-                   time.sleep(1)
                    interrupts = sensor.getInterrupts()
+                   print("INTer:{}".format(interrupts))
+                   time.sleep(1)
 
             else:
                 print("Lightning is not detected in the last {} minutes".format(lightning_timeout/60.0))
