@@ -109,6 +109,7 @@ while True:
                 print("Single Energy {}".format(energy))
                 print("Mask disturbance: {}".format(mask_dist))
                 print("Storm is {:02d} km away".format(distance))
+                time.sleep(1)
 
                 while(interrupt.read()):
                    print("Interrupt signal is still True after readout..")

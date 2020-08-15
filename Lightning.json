@@ -13,6 +13,6 @@
 	"storage_stationpath": "/storage/experiments/",
   "HWversion": "RSMS01A",
 	"origin": "CAR-B0",      // name of detection station
-	"receiver_carrier": 428050000,
+	"receiver_carrier": 456150000,
 	"configuration": "default",         // name of configuration which will be selected from following list
 }
