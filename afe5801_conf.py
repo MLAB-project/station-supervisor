@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import sys
 from pymlab import config
@@ -32,10 +32,10 @@ def reg_read(addr):
 
 def readout():
 	for a in range(1, 8):
-		print "\treg[%d] = 0x%x" % (a, reg_read(a))
+		print("\treg[%d] = 0x%x" % (a, reg_read(a)))
 
 def main():
-	print "resetting"
+	print("resetting")
 	reg_write(0x0, 0x1)     # device reset
 
 	reg_write(0x07, 0x0408) # LOW pass filter 7.5 MHz, Low noise mode. AC coupled
@@ -51,12 +51,12 @@ def main():
 		return
 
 	ptr_mode = int(sys.argv[1], 2)
-	print "setting PATTERN_MODE to 0x%x" % ptr_mode
+	print("setting PATTERN_MODE to 0x%x" % ptr_mode)
 	reg_write(0x2, ptr_mode << 13)
 
 	if len(sys.argv) >= 3:
 		custom = int(sys.argv[2], 2)
-		print "setting CUSTOM_PATTERN to 0x%x" % custom
+		print("setting CUSTOM_PATTERN to 0x%x" % custom)
 		reg_write(0x5, custom)
 
 	readout()

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Sample of measuring and frequency correction with ACOUNTER02A
 
@@ -26,7 +26,7 @@ value = parser.parse_file(sys.argv[1])
 # required frequency
 carrier_freq = value['receiver_carrier']
 
-print ("RSMS Station Local Oscillator Setup Utility \r\n")
+print("RSMS Station Local Oscillator Setup Utility \r\n")
 
 cfg = config.Config()
 cfg.load_file(sys.argv[2])
@@ -40,7 +40,7 @@ try:
     time.sleep(0.5)	# wait for complete reset of Si570
     fgen.set_freq(10.0, carrier_freq/1e6)
 
-    print ("Local oscillator frequency set to Hz ", carrier_freq)
+    print("Local oscillator frequency set to Hz ", carrier_freq)
 
 except IOError:
     sys.stdout.write("\r\n************ I2C Error\r\n")
