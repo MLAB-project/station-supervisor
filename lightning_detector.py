@@ -12,6 +12,10 @@ from mlabutils import ejson
 
 from periphery import GPIO
 
+class Sensor_init(Exception):
+     pass
+
+
 #### Script Arguments ###############################################
 
 parser = ejson.Parser()
@@ -112,10 +116,11 @@ while True:
                 time.sleep(1)
 
                 while(interrupt.read()):
-                   print("Interrupt signal is still True after readout..")
+                   print("!! Interrupt signal is still True after readout !!")
                    interrupts = sensor.getInterrupts()
                    print("INTer:{}".format(interrupts))
                    time.sleep(1)
+                   raise Sensor_init("Sensor is stalled!")
 
             else:
                 print("Lightning is not detected in the last {} minutes".format(lightning_timeout/60.0))
@@ -125,6 +130,11 @@ while True:
         sys.stdout.write("\r\n************ I2C Error\r\n")
         time.sleep(2)
 
+    except Sensor_init:
+        sys.stdout.write("\r\nReinicialising the sensor!\r\n")
+        time.sleep(2)
+
     except KeyboardInterrupt:
         interrupt.close()
         sys.exit(0)
+
