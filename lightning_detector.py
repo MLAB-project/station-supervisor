@@ -67,7 +67,7 @@ while True:
         print("Configuring sensor registers")
         sensor.setWDTH(1)
         sensor.setNoiseFloor(6)
-        sensor.setIndoor(True)
+        sensor.setIndoor(False)
         sensor.setSpikeRejection(0)
         sensor.setMaskDist(False)
 
@@ -122,8 +122,8 @@ while True:
                 print("Interrupt signal line is in {}".format(interrupt.read()))
 
     except IOError:
-		sys.stdout.write("\r\n************ I2C Error\r\n")
-		time.sleep(2)
+        sys.stdout.write("\r\n************ I2C Error\r\n")
+        time.sleep(2)
 
     except KeyboardInterrupt:
         interrupt.close()
