@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 #%load_ext autoreload
 #%autoreload 2
@@ -9,6 +9,7 @@ import sys
 import os
 from pymlab import config
 from mlabutils import ejson
+import requests
 
 from periphery import GPIO
 
@@ -97,7 +98,6 @@ while True:
                 spike_rejection = sensor.getSpikeRejection()
                 mask_dist = sensor.getMaskDist()
 
-
                 with open(filename, "a") as f:
                     f.write("{}, {}, {}, {}, {}, {}, {}, {}, {}, {} \n".format(event_time, interrupts, wdth, tun_cap, indoor, noise_floor, spike_rejection, energy, mask_dist, distance ))
 
@@ -114,6 +114,9 @@ while True:
                 print("Mask disturbance: {}".format(mask_dist))
                 print("Storm is {:02d} km away".format(distance))
                 time.sleep(1)
+
+                post = requests.post('http://chronos.lan/control/startFilesave', json = {'format': 'h264', 'device': 'mmcblk1p1'})
+                print("Camera recording: " + post.reason)
 
                 while(interrupt.read()):
                    print("!! Interrupt signal is still True after readout !!")
@@ -137,4 +140,3 @@ while True:
     except KeyboardInterrupt:
         interrupt.close()
         sys.exit(0)
-
