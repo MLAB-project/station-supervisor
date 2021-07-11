@@ -115,6 +115,8 @@ while True:
                 print("Storm is {:02d} km away".format(distance))
                 time.sleep(1)
 
+                post = requests.post('http://chronos.lan/control/stopRecording')
+                time.sleep(2)
                 post = requests.post('http://chronos.lan/control/startFilesave', json = {'format': 'h264', 'device': 'mmcblk1p1'})
                 print("Camera recording: " + post.reason)
 
