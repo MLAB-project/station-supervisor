@@ -37,6 +37,8 @@ carrier_freq = value['receiver_carrier']	# Beacon frequency
 # station name
 StationName = value['origin']
 
+camera_url = "http://chronos.lan"
+
 
 while True:
 
@@ -48,7 +50,16 @@ while True:
     if not os.path.exists(filename):
         with open(filename, "a") as f:
             f.write('#timestamp,INTer,WDTH,TUN_CAP,Indoor_Mode,Noise_floor,Spike_rejction,Single_energy,Mask_disturbance,Distance\n')
+
     try:
+
+        # disable camera backlight LCD to save power and reduce temperature
+        post = requests.post(camera_url+'/control/p', json = {'backlightEnabled': False })
+        if post.reason == "OK" :
+        	print("Camera LCD backlight sucesfully Disabled")
+        else:
+            print(post)
+
 
 #### Sensor Configuration ###########################################
 
@@ -85,6 +96,7 @@ while True:
             print("Waiting for lightning interrupt.. ")
 
             if interrupt.read() or interrupt.poll(lightning_timeout):  #wait to interrupt from sensor or fail to timeout
+            	current_time = datetime.now() # save time of event
                 time.sleep(0.02)  #After the signal IRQ goes high the external unit should wait 2ms before reading the interrupt register.
                 event_time = time.time()
                 distance = sensor.getDistance()
@@ -115,10 +127,30 @@ while True:
                 print("Storm is {:02d} km away".format(distance))
                 time.sleep(1)
 
-                post = requests.post('http://chronos.lan/control/stopRecording')
-                time.sleep(2)
-                post = requests.post('http://chronos.lan/control/startFilesave', json = {'format': 'h264', 'device': 'mmcblk1p1'})
-                print("Camera recording: " + post.reason)
+            	filename = current_time.strftime("%Y-%m-%d-%H-%M-%S.%f")+"-lightning"
+
+            	post = requests.get(camera_url+'/control/p/videoState')
+            	if post.json() != {'videoState':'filesave'}:
+
+            	    post = requests.get(camera_url+'/control/p/state')
+            	    if post.json() == {'state':'recording'}:
+            	        post = requests.post(camera_url+'/control/stopRecording')
+            	        print("Stopping camera recording")
+
+            	    elif post.json() == {'state':'idle'}:
+            	        print("Camera is already idle")
+
+            	    else:
+            	        print(post.json())
+
+            	    post = requests.post(camera_url+'/control/startFilesave', json = {'format': 'h264', 'device': 'mmcblk1p1', 'filename': filename })
+            	    if post.reason == "OK" :
+            	    	print("Saving the video")
+            	    else:
+            	        print("Unable to save the video")
+            	        print(post)
+            	else:
+            	    print("Camera is already saving the video. Do not disturb!")
 
                 while(interrupt.read()):
                    print("!! Interrupt signal is still True after readout !!")
