@@ -142,7 +142,7 @@ while True:
                 print("Storm is {:02d} km away".format(distance))
                 time.sleep(1)
 
-                filename = current_time.strftime("%Y-%m-%d-%H-%M-%S.%f") + "-lightning"
+                video_filename = current_time.strftime("%Y-%m-%d-%H-%M-%S.%f") + "-lightning"
 
                 post = requests.get(camera_url + '/control/p/videoState')
                 if post.json() != {'videoState': 'filesave'}:
@@ -163,7 +163,7 @@ while True:
                                          json={
                                              'format': 'h264',
                                              'device': 'mmcblk1p1',
-                                             'filename': filename
+                                             'filename': video_filename
                                          })
                     if post.reason == "OK":
                         print("Saving the video")
