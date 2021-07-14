@@ -142,8 +142,7 @@ while True:
                 print("Storm is {:02d} km away".format(distance))
                 time.sleep(1)
 
-                filename = current_time.strftime(
-                    "%Y-%m-%d-%H-%M-%S.%f") + "-lightning"
+                filename = current_time.strftime("%Y-%m-%d-%H-%M-%S.%f") + "-lightning"
 
                 post = requests.get(camera_url + '/control/p/videoState')
                 if post.json() != {'videoState': 'filesave'}:
@@ -189,7 +188,8 @@ while True:
                 print("Interrupt signal line is in {}".format(
                     interrupt.read()))
 
-    except IOError:
+    except IOError as e:
+        print("Error: " + str(e))
         sys.stdout.write("\r\n************ I2C Error\r\n")
         time.sleep(2)
 
