@@ -103,7 +103,7 @@ while True:
             if interrupt.read() or interrupt.poll(
                     lightning_timeout
             ):  #wait to interrupt from sensor or fail to timeout
-                current_time = datetime.now()  # save time of event
+                current_time = datetime.datetime.now()  # save time of event
                 time.sleep(
                     0.02
                 )  #After the signal IRQ goes high the external unit should wait 2ms before reading the interrupt register.
