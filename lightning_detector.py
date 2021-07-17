@@ -80,6 +80,7 @@ while True:
 
         post = requests.post(camera_url+'/control/p', json = {'resolution': {'hRes': 928, 'vRes': 928, 'hOffset': 176, 'vOffset': 66}})
         if post.reason == "OK":
+            print("Video resolution is set.")
         else:
             print(post)
 
@@ -94,11 +95,6 @@ while True:
             print("Text overlay is inicialized.")
         else:
             print(post)
-
-
-
-
-print(post.reason)
 
 #### Sensor Configuration ###########################################
 
