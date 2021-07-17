@@ -66,6 +66,40 @@ while True:
         else:
             print(post)
 
+        post = requests.post(camera_url+'/control/stopRecording')
+        if post.reason == "OK":
+            print("Recording stopped.")
+        else:
+            print(post)
+
+        post = requests.post(camera_url+'/control/flushRecording')
+        if post.reason == "OK":
+            print("Recording buffer flushed.")
+        else:
+            print(post)
+
+        post = requests.post(camera_url+'/control/p', json = {'resolution': {'hRes': 928, 'vRes': 928, 'hOffset': 176, 'vOffset': 66}})
+        if post.reason == "OK":
+        else:
+            print(post)
+
+        post = requests.post(camera_url+'/control/p', json = {'recMaxFrames':4837})  # cca 3 s
+        if post.reason == "OK":
+            print("Video Recording lenght is set.")
+        else:
+            print(post)
+
+        post = requests.post(camera_url+'/control/p', json = {'recTrigDelay':2418})  # This value is only informative (it works for HW trigger only)
+        if post.reason == "OK":
+            print("Text overlay is inicialized.")
+        else:
+            print(post)
+
+
+
+
+print(post.reason)
+
 #### Sensor Configuration ###########################################
 
         sensor = cfg.get_device("lighting")
