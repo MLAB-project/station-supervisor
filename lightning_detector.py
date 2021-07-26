@@ -58,7 +58,7 @@ while True:
 
     try:
 
-        # disable camera backlight LCD to save power and reduce temperature
+        print("Disable camera backlight LCD to save power and reduce temperature")
         post = requests.post(camera_url + '/control/p',
                              json={'backlightEnabled': False})
         if post.reason == "OK":
@@ -116,11 +116,11 @@ while True:
         sensor.calib_rco()
 
         print("Configuring sensor registers")
-        sensor.setWDTH(1)
-        sensor.setNoiseFloor(6)
+        sensor.setWDTH(16)
+        sensor.setNoiseFloor(16)
         sensor.setIndoor(False)
-        sensor.setSpikeRejection(0)
-        sensor.setMaskDist(False)
+        sensor.setSpikeRejection(10)
+        sensor.setMaskDist(True)
 
         time.sleep(0.5)
 
