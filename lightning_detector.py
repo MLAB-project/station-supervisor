@@ -176,9 +176,10 @@ while True:
 
                 post = requests.get(camera_url + '/control/p/videoState')
                 if post.json() != {'videoState': 'filesave'}:
-
+                    time.sleep(0.01)
                     post = requests.get(camera_url + '/control/p/state')
                     if post.json() == {'state': 'recording'}:
+                        time.sleep(0.01)
                         post = requests.post(camera_url +
                                              '/control/stopRecording')
                         print("Stopping camera recording")
@@ -189,6 +190,7 @@ while True:
                     else:
                         print(post.json())
 
+                    time.sleep(0.01)
                     post = requests.post(camera_url + '/control/startFilesave',
                                          json={
                                              'format': 'h264',
@@ -200,9 +202,11 @@ while True:
                     else:
                         print("Unable to save the video")
                         print(post)
+                        print(post.status_code)
                 else:
-                    print(
-                        "Camera is already saving the video. Do not disturb!")
+                    print(post.status_code)
+                    print("Camera is already saving the video. Do not disturb!")
+
 
                 while (interrupt.read()):
                     print("!! Interrupt signal is still True after readout !!")
