@@ -41,7 +41,7 @@ class Cronos(object):
         self.camera_status_dict = {}
         self.last_update = 0 # cas posledniho behu funkce update
 
-        self.record = {'format': 'tiffraw', 'device': 'sda1'}
+        self.record = {'format': 'y12b', 'device': 'sda1'}
 
         self.config()
 
