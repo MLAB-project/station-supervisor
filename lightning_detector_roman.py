@@ -116,6 +116,13 @@ class Cronos(object):
                 print(post.json())
 
             time.sleep(0.01)
+            get = self.do_get('/control/p/state').json()    ## verify that recording is really stopped
+
+            if get == {'state': 'recording'}:
+                time.sleep(0.02)
+                post = self.do_post('/control/stopRecording')
+                print("Camera does not stop recording: Stopping camera recording again")
+                time.sleep(0.1)
             self.save_buffer(filename, format = self.record['format'], device = self.record['device'])
 
         else:
