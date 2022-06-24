@@ -115,7 +115,7 @@ class Cronos(object):
             else:
                 print(post.json())
 
-            time.sleep(0.01)
+            time.sleep(0.05)
             get = self.do_get('/control/p/state').json()    ## verify that recording is really stopped
 
             if get == {'state': 'recording'}:
