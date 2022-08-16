@@ -42,7 +42,7 @@ def main():
 
 	reg_write(0x0, 0b100)     # Access to TGC registers
 
-	reg_write(0x99, 0x07)     # Enable STATIC_PGA with fine gain 0.875dB
+	reg_write(0x99, 0x0f)     # Enable STATIC_PGA with fine gain 0.875dB
 	reg_write(0x9A, 0x24)     # coarse gain of +31dB. 
 
 
