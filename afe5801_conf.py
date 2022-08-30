@@ -38,7 +38,7 @@ def main():
 	print("resetting")
 	reg_write(0x0, 0x1)     # device reset
 
-	reg_write(0x07, 0x040A) # LOW pass filter 7.5 MHz, Low noise mode. AC coupled
+	reg_write(0x07, 0x040A) # LOW pass filter 7.5 MHz, Low noise mode. DC coupled
 
 	reg_write(0x0, 0b100)     # Access to TGC registers
 
