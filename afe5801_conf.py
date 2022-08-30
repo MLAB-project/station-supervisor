@@ -38,12 +38,12 @@ def main():
 	print("resetting")
 	reg_write(0x0, 0x1)     # device reset
 
-	reg_write(0x07, 0x0408) # LOW pass filter 7.5 MHz, Low noise mode. AC coupled
+	reg_write(0x07, 0x040A) # LOW pass filter 7.5 MHz, Low noise mode. AC coupled
 
 	reg_write(0x0, 0b100)     # Access to TGC registers
 
 	reg_write(0x99, 0x0f)     # Enable STATIC_PGA with fine gain 0.875dB
-	reg_write(0x9A, 0x24)     # coarse gain of +31dB. 
+	reg_write(0x9A, 0x24)     # coarse gain of +31dB.
 
 
 	if len(sys.argv) < 2:
