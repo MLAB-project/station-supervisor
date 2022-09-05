@@ -103,7 +103,6 @@ def assign_time_axis(fn, header, synclog):
 	return t2s, s2t, TimeTickLocator(t2s, s2t), FuncFormatter(lambda x, _: s2t(x).strftime("%H:%M:%S.%f")[:-4])
 
 from matplotlib import pyplot as plt
-import scipy.signal
 import numpy as np
 import math
 import traceback
