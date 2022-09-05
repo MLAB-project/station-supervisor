@@ -1,5 +1,6 @@
 i2c = {
-    "port": 0
+    "port": 0,
+    "driver":"smbus"
     }
 
 bus = [{
