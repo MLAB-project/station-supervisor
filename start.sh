@@ -21,6 +21,6 @@ fi
 cd ~/drivers
 
 if ! pidof -x triggernew > /dev/null; then
-	./triggernew -pre 210 -post 13 -nofir -recdir /data \
-		-spre 1 -spost 2 -snapdir /tmp/snaps/ > /dev/null &
+	./triggernew -pre 840 -post 52 -nofir -recdir /data \
+		-spre 1 -spost 3 -snapdir /tmp/snaps/ -depth 40 > /dev/null &
 fi
