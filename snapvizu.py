@@ -214,12 +214,14 @@ while True:
 	if snaps:
 		foundfn = snaps[0]
 	if foundfn != currfn:
+		print("\a") # play beep in cmd
 		print("Found: %s" % foundfn)
 		head, samples, synclog = loadrec(open(foundfn, "rb"))
 		for ax in subplots[1]:
 			ax.clear()
 		plotrec(head, samples, synclog, foundfn, subplots=subplots, title=foundfn)
 		currfn = foundfn
+		print("\a")
 	plt.pause(0.1)
 	print("Waiting... %s" % fingers[fingersph % len(fingers)], end="\r")
 	fingersph += 1
