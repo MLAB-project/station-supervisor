@@ -1,1 +1,2 @@
-killall trigger
+killall cleanup.sh
+killall triggernew

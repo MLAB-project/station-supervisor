@@ -4,7 +4,7 @@ import sys
 from pymlab import config
 
 cfg = config.Config(
-	i2c = {"port": 0},
+	i2c = {"port": 0, "device": "smbus"},
         bus = [
             {
                 "type": "i2chub",

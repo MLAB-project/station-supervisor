@@ -186,13 +186,13 @@ def plotrec(h, samples, synclog, fn, pre_trigger_blocks=10, post_trigger_blocks=
 	ax1.plot(range(a, b), samples[a:b,0:2], linestyle="",marker="o", alpha=.3, markersize=1)
 	ax1.set_title("Channels 0 and 1")
 	ax1.set_xlabel('')
-	wf_plotrec(samples[a:b,0] + 1j*samples[a:b,1], 10e6, bins=8192, ax=ax2, offset=a)
+	wf_plotrec(samples[a:b,0] + 1j*samples[a:b,1], 10e6, bins=256, ax=ax2, offset=a)
 
 
 	ax3.plot(range(a, b), samples[a:b,2:4], linestyle="", marker="o", alpha=.3, markersize=1)
 	ax3.set_title("Channels 2 and 3")
 	ax3.set_xlabel('')
-	wf_plotrec(samples[a:b,2] + 1j*samples[a:b,3], 10e6, bins=8192, ax=ax4, offset=a)
+	wf_plotrec(samples[a:b,2] + 1j*samples[a:b,3], 10e6, bins=256, ax=ax4, offset=a)
 
 	for t in marktimes:
 		if t > at and t < bt:
