@@ -125,6 +125,7 @@ class Cronos(object):
 
     def start_recording(self):
         print("Camera: Start recording")
+        self.camera_status = CronosStatus.INIT
         return self.do_post('/control/startRecording', payload = {'recMode': 'normal'})
 
     def periodic_update(self, min_period = 1):
