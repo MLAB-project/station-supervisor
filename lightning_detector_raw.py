@@ -26,7 +26,7 @@ class CronosStatus(Enum):
     INIT = 1
     BUFFER = 2
     SAVING = 3
-    SAVED = 4
+    RECORDING = 4
 
 class Cronos(object):
     """docstring for cronos."""
@@ -125,8 +125,11 @@ class Cronos(object):
 
     def start_recording(self):
         print("Camera: Start recording")
-        self.camera_status = CronosStatus.INIT
-        return self.do_post('/control/startRecording', payload = {'recMode': 'normal'})
+        post = self.do_post('/control/startRecording', payload = {'recMode': 'normal'})
+        if post.reason == "OK":
+            print("Camera: Saving the video")
+            self.camera_status = CronosStatus.RECORDING
+        return post
 
     def periodic_update(self, min_period = 1):
         if self.last_update+min_period < time.time():
