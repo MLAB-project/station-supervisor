@@ -1,1 +1,1 @@
-python3 lightning_detector.py Lightning.json bus_config.py
+python3 lightning_detector_raw.py Lightning.json bus_config.py

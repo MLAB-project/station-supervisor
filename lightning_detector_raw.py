@@ -7,7 +7,6 @@ import time
 import datetime
 import sys
 import os
-#from pymlab import config
 from mlabutils import ejson
 import requests
 import time
@@ -188,9 +187,6 @@ camera_url = "http://chronos.lan"
 
 while True:
 
-    #cfg = config.Config()
-    #cfg.load_file(sys.argv[2])
-
     now = datetime.datetime.now()
     filename = path + time.strftime(
         "%Y%m%d%H", time.gmtime()) + "0000_" + StationName + "_lightning.csv"
@@ -201,75 +197,14 @@ while True:
             )
 
     try:
-
-        # print("Disable camera backlight LCD to save power and reduce temperature")
-        # post = requests.post(camera_url + '/control/p',
-        #                      json={'backlightEnabled': False})
-        # if post.reason == "OK":
-        #     print("Camera LCD backlight sucesfully Disabled")
-        # else:
-        #     print(post)
-        #
-        # post = requests.post(camera_url+'/control/stopRecording')
-        # if post.reason == "OK":
-        #     print("Recording stopped.")
-        # else:
-        #     print(post)
-        #
-        # post = requests.post(camera_url+'/control/flushRecording')
-        # if post.reason == "OK":
-        #     print("Recording buffer flushed.")
-        # else:
-        #     print(post)
-        #
-        # post = requests.post(camera_url+'/control/p', json = {'resolution': {'hRes': 928, 'vRes': 928, 'hOffset': 176, 'vOffset': 66}})
-        # if post.reason == "OK":
-        #     print("Video resolution is set.")
-        # else:
-        #     print(post)
-        #
-        # post = requests.post(camera_url+'/control/p', json = {'recMaxFrames':4837})  # cca 3 s
-        # if post.reason == "OK":
-        #     print("Video Recording lenght is set.")
-        # else:
-        #     print(post)
-        #
-        # post = requests.post(camera_url+'/control/p', json = {'recTrigDelay':2418})  # This value is only informative (it works for HW trigger only)
-        # if post.reason == "OK":
-        #     print("Text overlay is inicialized.")
-        # else:
-        #     print(post)
-
         camera = Cronos(camera_url)
-
-
-
 
 #### Sensor Configuration ###########################################
 
-        #sensor = cfg.get_device("lighting")
-        #sensor.route()
-
-        # Open GPIO 960 as interrupt input from LIGHTNING01A sensor.
         interrupt = GPIO(960, "in")
         interrupt.edge = "rising"
 
         lightning_timeout = 5
-
-        #time.sleep(0.5)
-        #sensor.reset()
-
-        #time.sleep(0.5)
-
-        #print("Calibrating RCO")
-        #sensor.calib_rco()
-
-        #print("Configuring sensor registers")
-        #sensor.setWDTH(16)
-        #sensor.setNoiseFloor(16)
-        #sensor.setIndoor(False)
-        #sensor.setSpikeRejection(10)
-        #sensor.setMaskDist(True)
 
         time.sleep(0.5)
 
@@ -284,53 +219,16 @@ while True:
             ):  #wait to interrupt from sensor or fail to timeout
                 current_time = datetime.datetime.now()  # save time of event
                 time.sleep(0.02)
-                #)  #After the signal IRQ goes high the external unit should wait 2ms before reading the interrupt register.
-                #event_time = time.time()
-                #distance = sensor.getDistance()
-                #energy = sensor.getSingleEnergy()
-                #interrupts = sensor.getInterrupts()
-                #wdth = sensor.getWDTH()
-                #tun_cap = sensor.getTUN_CAP()
-                #        print("power: ", sensor.getPowerStatus())
-                #indoor = sensor.getIndoor()
-                #noise_floor = 0  # sensor.getNoiseFloor()
-                #spike_rejection = sensor.getSpikeRejection()
-                #mask_dist = sensor.getMaskDist()
-
-                #with open(filename, "a") as f:
-                #    f.write("{}, {}, {}, {}, {}, {}, {}, {}, {}, {} \n".format(
-                #        event_time, interrupts, wdth, tun_cap, indoor,
-                #        noise_floor, spike_rejection, energy, mask_dist,
-                #        distance))
-
                 print(
                     "---------------------------------------------------------"
                 )
                 print("Event {}".format(
                     datetime.datetime.now().isoformat(' ')))
-                #print("INTer:{}".format(interrupts))
-                #print("WDTH: 0b{:04b}".format(wdth))
-                #print("TUN_CAP: {}".format(tun_cap))
-                #        print("power: ", sensor.getPowerStatus())
-                #print("Indoor Mode: {}".format(indoor))
-                #print("Noise floor is {} uVrms".format(noise_floor))
-                #print("Spike rejection 0b{:04b}".format(spike_rejection))
-                #print("Single Energy {}".format(energy))
-                #print("Mask disturbance: {}".format(mask_dist))
-                #print("Storm is {:02d} km away".format(distance))
                 time.sleep(1)
 
                 video_filename = current_time.strftime("%Y-%m-%d-%H-%M-%S.%f") + "-lightning"
 
                 camera.save_video(video_filename)
-
-
-                #while (interrupt.read()):
-                #    print("!! Interrupt signal is still True after readout !!")
-                #    #interrupts = sensor.getInterrupts()
-                #    #print("INTer:{}".format(interrupts))
-                #    time.sleep(1)
-                #    raise Sensor_init("Sensor is stalled!")
 
             else:
                 print(
@@ -341,7 +239,7 @@ while True:
 
     except IOError as e:
         print("Error: " + str(e))
-        sys.stdout.write("\r\n************ I2C Error\r\n")
+        sys.stdout.write("\r\nCommunication Error\r\n")
         time.sleep(2)
 
     except Sensor_init:
