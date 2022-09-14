@@ -10,10 +10,14 @@ import os
 from mlabutils import ejson
 import requests
 import time
-
+import json
 from periphery import GPIO
 
 from threading import *
+
+
+if not os.path.exists('/data/chronos_metadata/'):
+    os.makedirs('/data/chronos_metadata/')
 
 
 class Sensor_init(Exception):
@@ -41,6 +45,7 @@ class Cronos(object):
         self.last_update = 0 # cas posledniho behu funkce update
 
         self.record = {'format': 'y12b', 'device': 'sda1'}
+        #self.record = {'format': 'h264', 'device': 'mmcblk1p1'}
 
         self.config()
 
@@ -78,10 +83,142 @@ class Cronos(object):
         print("Camera: Init text overlay (for HW trigger)")
         self.do_post('/control/p', payload = {'recTrigDelay':2418})  # This value is only informative (it works for HW trigger only)
 
-        self.camera_status = CronosStatus.INIT
+        print("Camera: Clear calibration")
+        self.do_post('/control/clearCalibration', payload={'factory': True})
 
+        self.camera_status = CronosStatus.INIT
+        self.get_config()
         time.sleep(0.5)
         self.start_recording()
+
+    def get_config(self, filename=None):
+        config_list = {}
+        configs = [
+            'backlightEnabled',
+            'batteryChargeNormalized',
+            'batteryChargePercent',
+            'batteryCritical',
+            'batteryPresent',
+            'batteryVoltage',
+            'calSuggested',
+            'cameraApiVersion',
+            'cameraDescription',
+            'cameraFpgaVersion',
+            'cameraIdNumber',
+            'cameraMaxFrames',
+            'cameraMemoryGB',
+            'cameraModel',
+            'cameraSerial',
+            'cameraTallyMode',
+            'colorMatrix',
+            'config',
+            'currentGain',
+            'currentIso',
+            'dateTime',
+            'digitalGain',
+            'disableRingBuffer',
+            'exposureMax',
+            'exposureMin',
+            'exposureMode',
+            'exposureNormalized',
+            'exposurePercent',
+            'exposurePeriod',
+            'externalPower',
+            'externalStorage',
+            'fanOverride',
+            'focusPeakingColor',
+            'focusPeakingLevel',
+            'framePeriod',
+            'frameRate',
+            'ioDelayTime',
+            'ioDetailedStatus',
+            'ioMapping',
+            'ioMappingCombAnd',
+            'ioMappingCombOr1',
+            'ioMappingCombOr2',
+            'ioMappingCombOr3',
+            'ioMappingCombXor',
+            'ioMappingDelay',
+            'ioMappingGate',
+            'ioMappingIo1',
+            'ioMappingIo2',
+            'ioMappingShutter',
+            'ioMappingStartRec',
+            'ioMappingStopRec',
+            'ioMappingToggleClear',
+            'ioMappingToggleFlip',
+            'ioMappingToggleSet',
+            'ioMappingTrigger',
+            'ioOutputStatus'
+            'ioSourceStatus',
+            'ioStatusSourceIo1',
+            'ioStatusSourceIo2',
+            'ioStatusSourceIo3',
+            'ioThresholdIo1',
+            'ioThresholdIo2',
+            'lastShutdownReason',
+            'minFramePeriod',
+            'miscScratchPad',
+            'networkHostname',
+            'overlayEnable',
+            'overlayFormat',
+            'overlayPosition',
+            'playbackLength',
+            'playbackPosition',
+            'playbackRate',
+            'playbackStart',
+            'pmicFirmwareVersion',
+            'powerOffWhenMainsLost',
+            'powerOnWhenMainsConnected',
+            'recMaxFrames',
+            'recMode',
+            'recPreBurst',
+            'recSegments',
+            'recTrigDelay',
+            'resolution',
+            'sensorBitDepth',
+            'sensorColorPattern',
+            'sensorHIncrement',
+            'sensorHMax',
+            'sensorHMin',
+            'sensorIso',
+            'sensorMaxGain',
+            'sensorName',
+            'sensorPixelRate',
+            'sensorTemperature',
+            'sensorVDark',
+            'sensorVIncrement',
+            'sensorVMax',
+            'sensorVMin',
+            'shippingMode',
+            'shutterAngle',
+            'state',
+            'systemTemperature',
+            'totalFrames',
+            'totalSegments',
+            'videoConfig',
+            'videoSegments',
+            'videoState',
+            'videoZoom',
+            'wbColor',
+            'wbCustomColor',
+            'wbTemperature',
+            'zebraLevel',
+            ]
+        
+        for param in configs:
+            try:
+                msg = self.do_get('/control/p/{}'.format(param)).json()
+                #msg = json.loads(r.content.decode('utf-8'))
+                #print(msg)
+                config_list.update(msg)
+            except:
+                print("chyba ziskavani parametru")
+        
+        if filename:
+            with open(filename+".json", "w") as outfile:
+                json.dump(config_list, outfile, indent = 4)
+        return config_list
 
     def save_buffer(self, filename, format = 'h264', device = 'mmcblk1p1'):
 
@@ -187,8 +324,9 @@ while True:
                     datetime.datetime.now().isoformat(' ')))
                 time.sleep(1.6)
 
-                video_filename = current_time.strftime("%Y-%m-%d-%H-%M-%S.%f") + "-lightning"
+                video_filename = current_time.strftime("%Y-%m-%d_%H-%M-%S_%f") + "-lightning"
 
+                camera.get_config('/data/chronos_metadata/'+video_filename)
                 camera.save_video(video_filename)
 
             else:
