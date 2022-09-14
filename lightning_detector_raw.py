@@ -105,25 +105,14 @@ class Cronos(object):
 
             if get == {'state': 'recording'}:
                 time.sleep(0.01)
-                post = self.do_post('/control/stopRecording')
-                print("Camera: Stopping camera recording")
+                print("Camera: Camera recording has not been stoped")
 
             elif get == {'state': 'idle'}:
-                print("Camera: Camera is already idle")
+                print("Camera: Camera is already idle, saving the video")
+                self.save_buffer(filename, format = self.record['format'], device = self.record['device'])
 
             else:
                 print(post.json())
-
-            time.sleep(0.05)
-            get = self.do_get('/control/p/state').json()    ## verify that recording is really stopped
-
-            if get == {'state': 'recording'}:
-                time.sleep(0.02)
-                post = self.do_post('/control/stopRecording')
-                print("Camera does not stop recording: Stopping camera recording again")
-                time.sleep(0.1)
-            self.save_buffer(filename, format = self.record['format'], device = self.record['device'])
-
         else:
             print("Camera is already saving the video. Do not disturb!")
 
@@ -148,8 +137,6 @@ class Cronos(object):
                 if state != 'filesave':
                     self.start_recording()
 
-
-
 ## Zatim priprava na obsluhu kamery ve vlastnim vlaknu..
 
 # def camera_thread_function():
@@ -163,39 +150,9 @@ class Cronos(object):
 
 #### Script Arguments ###############################################
 
-parser = ejson.Parser()
-
-if len(sys.argv) != 3:
-    sys.stderr.write(
-        "Invalid number of arguments. Missing path to a config files!\n")
-    sys.stderr.write("Usage: %s config_file.json i2c_bus_config.py\n" %
-                     (sys.argv[0], ))
-    sys.exit(1)
-
-value = parser.parse_file(sys.argv[1])
-
-# path to metadata output directory
-path = value['metadata_path']
-
-# required frequency
-carrier_freq = value['receiver_carrier']  # Beacon frequency
-
-# station name
-StationName = value['origin']
-
 camera_url = "http://chronos.lan"
 
 while True:
-
-    now = datetime.datetime.now()
-    filename = path + time.strftime(
-        "%Y%m%d%H", time.gmtime()) + "0000_" + StationName + "_lightning.csv"
-    if not os.path.exists(filename):
-        with open(filename, "a") as f:
-            f.write(
-                '#timestamp,INTer,WDTH,TUN_CAP,Indoor_Mode,Noise_floor,Spike_rejction,Single_energy,Mask_disturbance,Distance\n'
-            )
-
     try:
         camera = Cronos(camera_url)
 
@@ -224,7 +181,7 @@ while True:
                 )
                 print("Event {}".format(
                     datetime.datetime.now().isoformat(' ')))
-                time.sleep(1)
+                time.sleep(1.6)
 
                 video_filename = current_time.strftime("%Y-%m-%d-%H-%M-%S.%f") + "-lightning"
 
