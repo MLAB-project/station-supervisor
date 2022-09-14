@@ -114,7 +114,7 @@ class Cronos(object):
             else:
                 print(post.json())
         else:
-            print("Camera is already saving the video. Do not disturb!")
+            print("Camera is already saving the video. Unable to save a new video!")
 
     def get_videoState(self, save = True):
         get = self.do_get('/control/p/videoState').json()
@@ -190,8 +190,8 @@ while True:
 
             else:
                 print(
-                    "Lightning is not detected in the last {} minutes".format(
-                        lightning_timeout / 60.0))
+                    "Lightning is not detected in the last {} seconds".format(
+                        lightning_timeout))
                 print("Interrupt signal line is in {}".format(interrupt.read()))
                 camera.periodic_update()
 
