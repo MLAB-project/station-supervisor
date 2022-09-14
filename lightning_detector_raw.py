@@ -92,7 +92,7 @@ class Cronos(object):
         self.start_recording()
 
     def get_config(self, filename=None):
-        config_list = {}
+        config_list = {'record_setting': self.record}
         configs = [
             'backlightEnabled',
             'batteryChargeNormalized',
