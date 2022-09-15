@@ -106,6 +106,8 @@ from matplotlib import pyplot as plt
 import numpy as np
 import math
 import traceback
+import matplotlib
+matplotlib.use('TkAgg')
 
 def waterfallize_pre(signal, bins):
 	window = 0.5 * (1.0 - np.cos((2 * math.pi * np.arange(bins)) / bins))
