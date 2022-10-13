@@ -30,6 +30,10 @@ else
   echo "# RSMS detector register dump at `date +"%Y-%m-%dT%H:%M:%S%z"`"
 fi
 
+if [ -n "$csv_header" ] || [ -n "$csv" ]; then
+  save "60001004" "CTRL"
+fi
+
 save "60001018" "SHAPEON"
 save "6000101c" "SHAPEOFF"
 save "60001020" "DET0TH"
