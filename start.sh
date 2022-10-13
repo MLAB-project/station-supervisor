@@ -10,7 +10,7 @@ ntp-wait -v
 ulimit -c unlimited
 
 if ! pgrep ourperiph.py > /dev/null; then
-	~/repos/regweb/ourperiph.py &
+	./regweb/ourperiph.py &
 fi
 
 mkdir -p /tmp/snaps

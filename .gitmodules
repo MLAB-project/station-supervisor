@@ -1,0 +1,3 @@
+[submodule "regweb"]
+	path = regweb
+	url = git@github.com:MLAB-project/rsms-regweb.git
