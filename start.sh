@@ -13,6 +13,8 @@ if ! pgrep ourperiph.py > /dev/null; then
 	./regweb/ourperiph.py &
 fi
 
+./lastregs.sh
+
 mkdir -p /tmp/snaps
 if ! pgrep cleanup.sh > /dev/null; then
 	./cleanup.sh &
