@@ -127,8 +127,8 @@ def abs2(x):
 
 def wf_plotrec(samples, sample_rate, freq_offset=0, freq_lim=None, bins=8192, ax=None, title=None,
 	   offset=0, figsize=(24, 6)):
-	img = waterfallize(samples, bins).T
-	img[np.isneginf(img)] = np.nan
+	#img = waterfallize(samples, bins).T
+	#img[np.isneginf(img)] = np.nan
 	# ^^ might not be needed, was copied from pysdr-recviewer
 	
 	if ax is None:
@@ -136,8 +136,8 @@ def wf_plotrec(samples, sample_rate, freq_offset=0, freq_lim=None, bins=8192, ax
 	if title is not None:
 		fig.suptitle(title)
 
-	ax.imshow(img, extent=[offset, offset+len(samples), freq_offset + sample_rate/2, freq_offset - sample_rate/2],
-			 aspect='auto', interpolation='none', cmap='magma')
+	#ax.imshow(img, extent=[offset, offset+len(samples), freq_offset + sample_rate/2, freq_offset - sample_rate/2],
+	#		 aspect='auto', interpolation='none', cmap='magma')
 	ax.set_xlabel('Time [s]'); ax.set_ylabel('Frequency [Hz]');
 	
 	if freq_lim is not None:
@@ -177,7 +177,7 @@ def plotrec(h, samples, synclog, fn, pre_trigger_blocks=10, post_trigger_blocks=
 	a = (h['preTrigger']-pre_trigger_blocks)*h['descSpan']//16
 	b = (h['preTrigger']+post_trigger_blocks)*h['descSpan']//16 
 
-	fig, (ax1, ax2, ax3, ax4) = subplots or \
+	fig, (ax1, ax2) = subplots or \
 			plt.subplots(figsize=figsize, nrows=8, sharex=True)
 	if title is not None:
 		fig.suptitle(title)
@@ -185,16 +185,18 @@ def plotrec(h, samples, synclog, fn, pre_trigger_blocks=10, post_trigger_blocks=
 	ax1.xaxis.set_major_locator(ticker)
 	ax1.xaxis.set_major_formatter(formatter)
 
-	ax1.plot(range(a, b), samples[a:b,0:2], linestyle="",marker="o", alpha=.3, markersize=1)
+	ax1.plot(range(a, b), samples[a:b,0:2], linestyle="",marker="o", alpha=.3, markersize=1, label=["ch 0","ch 1"])
 	ax1.set_title("Channels 0 and 1")
 	ax1.set_xlabel('')
-	wf_plotrec(samples[a:b,0] + 1j*samples[a:b,1], 10e6, bins=256, ax=ax2, offset=a)
+	ax1.legend()
+	#wf_plotrec(samples[a:b,0] + 1j*samples[a:b,1], 10e6, bins=256, ax=ax2, offset=a)
 
 
-	ax3.plot(range(a, b), samples[a:b,2:4], linestyle="", marker="o", alpha=.3, markersize=1)
-	ax3.set_title("Channels 2 and 3")
-	ax3.set_xlabel('')
-	wf_plotrec(samples[a:b,2] + 1j*samples[a:b,3], 10e6, bins=256, ax=ax4, offset=a)
+	ax2.plot(range(a, b), samples[a:b,3:4], linestyle="", marker="o", alpha=.3, markersize=1, label="ch 3")
+	ax2.set_title("Channels 3")
+	ax2.set_xlabel('')
+	ax2.legend()
+	#wf_plotrec(samples[a:b,2] + 1j*samples[a:b,3], 10e6, bins=256, ax=ax4, offset=a)
 
 	for t in marktimes:
 		if t > at and t < bt:
@@ -207,7 +209,7 @@ if len(sys.argv) > 1:
 
 fingers = "|/-\\"
 fingersph = 0
-subplots = plt.subplots(figsize=(8,4), nrows=4, sharex=True)
+subplots = plt.subplots(figsize=(8,4), nrows=2, sharex=True)
 currfn = None
 foundfn = None
 while True:
