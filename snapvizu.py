@@ -213,20 +213,24 @@ subplots = plt.subplots(figsize=(8,4), nrows=2, sharex=True)
 currfn = None
 foundfn = None
 while True:
-	snaps = os.listdir('.')
-	snaps.sort()
-	if snaps:
-		foundfn = snaps[-1]
-	if foundfn != currfn:
-		print("\a") # play beep in cmd
-		print("Found: %s" % foundfn)
-		head, samples, synclog = loadrec(open(foundfn, "rb"))
-		for ax in subplots[1]:
-			ax.clear()
-		plotrec(head, samples, synclog, foundfn, subplots=subplots, title=foundfn)
-		currfn = foundfn
-		print("\a")
-	plt.pause(0.1)
-	print("Waiting... %s" % fingers[fingersph % len(fingers)], end="\r")
-	fingersph += 1
+	try:
+		snaps = os.listdir('.')
+		snaps.sort()
+		if snaps:
+			foundfn = snaps[-1]
+		if foundfn != currfn:
+			print("\a") # play beep in cmd
+			print("Found: %s" % foundfn)
+			head, samples, synclog = loadrec(open(foundfn, "rb"))
+			for ax in subplots[1]:
+				ax.clear()
+			plotrec(head, samples, synclog, foundfn, subplots=subplots, title=foundfn)
+			currfn = foundfn
+			print("\a")
+		plt.pause(0.1)
+		print("Waiting... %s" % fingers[fingersph % len(fingers)], end="\r")
+		fingersph += 1
+	except:
+		print("Chyba")
+	
 
