@@ -216,7 +216,7 @@ while True:
 	snaps = os.listdir('.')
 	snaps.sort()
 	if snaps:
-		foundfn = snaps[0]
+		foundfn = snaps[-1]
 	if foundfn != currfn:
 		print("\a") # play beep in cmd
 		print("Found: %s" % foundfn)
