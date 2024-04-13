@@ -6,7 +6,8 @@ Measuring station management software package. It is used for controlling MLAB's
 Supported measurement stations
 -------------
 
-*   Radio meteor detection stations - RMDS01A, RMDS01B, RMDS02A, RMDS02B, RMDS02C
+*   Radio meteor detection statiton - RMDS02F
+*   Radio meteor detection stations - RMDS01A, RMDS01B, RMDS02A, RMDS02B, RMDS02C (different branch)
 
 Station hardware supported in future
 -------------
@@ -20,7 +21,13 @@ Installation
 This scripts have to be copyed to ~/Bolidozor directory.
 Preferencis -> Default applications fo LXsession -> Autostart -> Add < x-terminal-emulator --geometry=100x20 -e /home/odroid/Bolidozor/station-supervisor/start.sh >
 
+Or place link to `start.sh` file into `/etc/rc.local`. 
+
 Dependencies
 ===========
 
 Uses pymlab I2C bindings to control I2C devices such as CLKGEN01B
+
+```
+sudo apt install ntp
+```
