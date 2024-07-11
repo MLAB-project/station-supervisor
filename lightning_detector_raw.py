@@ -74,6 +74,9 @@ class Cronos(object):
         time.sleep(0.1)
         self.do_post('/control/flushRecording')
 
+        print("Camera: Get current exposurePeriod")
+        exposure_pre = self.do_get('/control/p/exposurePeriod').json().get('exposurePeriod', 0)
+
         print("Camera: Update AOI")
         self.do_post('/control/p', payload = {'resolution': {'hRes': 928, 'vRes': 928, 'hOffset': 176, 'vOffset': 66}} )
 
@@ -81,10 +84,13 @@ class Cronos(object):
         self.do_post('/control/p', payload = {'recMaxFrames':4837} )
 
         print("Camera: Init text overlay (for HW trigger)")
-        self.do_post('/control/p', payload = {'recTrigDelay':2418})  # This value is only informative (it works for HW trigger only)
+        self.do_post('/control/p', payload = {'recTrigDelay':3300})
 
         print("Camera: Clear calibration")
         self.do_post('/control/clearCalibration', payload={'factory': True})
+
+        print("Camera: Renew exposure", exposure_pre)
+        self.do_post('/control/p', payload = {'exposurePeriod': exposure_pre})
 
         self.camera_status = CronosStatus.INIT
         self.get_config()
